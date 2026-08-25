@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Total_Cost_Cannot_Exceed_Budget</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+    NOT(ISBLANK(Total_Budget__c)),
+    NOT(ISBLANK(Total_Cost__c)),
+    Total_Cost__c &gt; Total_Budget__c
+)</errorConditionFormula>
+    <errorDisplayField>Total_Cost__c</errorDisplayField>
+    <errorMessage>Le coût total ne peut pas dépasser le budget total.</errorMessage>
+</ValidationRule>
