@@ -26,16 +26,16 @@ private class TripControllerTest {
     }
 
     @IsTest
-    static void testBudgetPerParticipantValid() {
+    static void testValidDates() {
 
         Trip__c trip = new Trip__c(
             Status__c = 'A venir',
             Destination__c = 'Lyon',
             Start_Date__c = Date.today().addDays(10),
             End_Date__c = Date.today().addDays(15),
-            Number_of_Participants__c = 10,
-            Total_Budget__c = 1000,
-            Total_Cost__c = 800
+            Number_of_Participants__c = 20,
+            Total_Budget__c = 10000,
+            Total_Cost__c = 8000
         );
 
         Test.startTest();
@@ -46,16 +46,16 @@ private class TripControllerTest {
     }
 
     @IsTest
-    static void testBudgetPerParticipantInvalid() {
+    static void testInvalidDates() {
 
         Trip__c trip = new Trip__c(
             Status__c = 'A venir',
             Destination__c = 'Marseille',
-            Start_Date__c = Date.today().addDays(10),
-            End_Date__c = Date.today().addDays(15),
-            Number_of_Participants__c = 10,
-            Total_Budget__c = 500,
-            Total_Cost__c = 400
+            Start_Date__c = Date.today().addDays(15),
+            End_Date__c = Date.today().addDays(10),
+            Number_of_Participants__c = 20,
+            Total_Budget__c = 10000,
+            Total_Cost__c = 8000
         );
 
         Test.startTest();
@@ -66,7 +66,7 @@ private class TripControllerTest {
         } catch (DmlException e) {
             System.assert(
                 e.getMessage().contains(
-                    'Le budget par participant doit être supérieur ou égal à 100 €.'
+                    'La date de fin doit être postérieure ou égale à la date de début.'
                 )
             );
         }
@@ -74,3 +74,4 @@ private class TripControllerTest {
         Test.stopTest();
     }
 }
+

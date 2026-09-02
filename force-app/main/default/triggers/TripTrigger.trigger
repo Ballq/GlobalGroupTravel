@@ -2,18 +2,13 @@ trigger TripTrigger on Trip__c (before insert, before update) {
 
     for (Trip__c trip : Trigger.new) {
 
-        if (trip.Number_of_Participants__c != null &&
-            trip.Number_of_Participants__c > 0 &&
-            trip.Total_Budget__c != null) {
+        if (trip.Start_Date__c != null &&
+            trip.End_Date__c != null &&
+            trip.End_Date__c < trip.Start_Date__c) {
 
-            Decimal budgetParParticipant =
-                trip.Total_Budget__c / trip.Number_of_Participants__c;
-
-            if (budgetParParticipant < 100) {
-                trip.addError(
-                    'Le budget par participant doit être supérieur ou égal à 100 €.'
-                );
-            }
+            trip.addError(
+                'La date de fin doit être postérieure ou égale à la date de début.'
+            );
         }
     }
 }
