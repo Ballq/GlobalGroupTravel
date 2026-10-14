@@ -1,260 +1,960 @@
 <template>
 
-    <lightning-card
-        title="Gestion des voyages"
-        icon-name="standard:travel_mode">
+    <!-- =====================================================
+         MESSAGE D'ERREUR
+         ===================================================== -->
 
-        <!-- FORMULAIRE -->
-        <div class="slds-p-around_medium">
+    <template if:true={errorMessage}>
+        <div class="slds-notify slds-notify_alert slds-theme_error slds-m-around_medium">
+            {errorMessage}
+        </div>
+    </template>
 
-            <h2 class="slds-text-heading_medium slds-m-bottom_medium">
-                <template if:true={isEditMode}>
-                    Modifier un voyage
-                </template>
 
-                <template if:false={isEditMode}>
-                    Créer un voyage
-                </template>
-            </h2>
+    <!-- =====================================================
+         TRIPS
+         ===================================================== -->
 
-            <div class="slds-grid slds-wrap slds-gutters">
+    <div class="slds-p-around_medium">
 
-                <!-- DESTINATION -->
-                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+        <h2 class="slds-text-heading_large slds-m-bottom_medium">
+            Voyages
+        </h2>
 
-                    <lightning-input
-                        label="Destination"
-                        value={destination}
-                        onchange={handleDestinationChange}
-                        required>
-                    </lightning-input>
 
-                </div>
+        <h3 class="slds-text-heading_medium slds-m-bottom_medium">
 
-                <!-- DATE DEBUT -->
-                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+            <template if:true={isEditMode}>
+                Modifier un voyage
+            </template>
 
-                    <lightning-input
-                        type="date"
-                        label="Date de début"
-                        value={startDate}
-                        onchange={handleStartDateChange}
-                        required>
-                    </lightning-input>
+            <template if:false={isEditMode}>
+                Créer un voyage
+            </template>
 
-                </div>
+        </h3>
 
-                <!-- DATE FIN -->
-                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
 
-                    <lightning-input
-                        type="date"
-                        label="Date de fin"
-                        value={endDate}
-                        onchange={handleEndDateChange}
-                        required>
-                    </lightning-input>
+        <div class="slds-grid slds-wrap slds-gutters">
 
-                </div>
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
 
-                <!-- PARTICIPANTS -->
-                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
-
-                    <lightning-input
-                        type="number"
-                        label="Nombre de participants"
-                        value={participants}
-                        onchange={handleParticipantsChange}
-                        required>
-                    </lightning-input>
-
-                </div>
-
-                <!-- BUDGET -->
-                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
-
-                    <lightning-input
-                        type="number"
-                        label="Budget total"
-                        value={budget}
-                        onchange={handleBudgetChange}
-                        required>
-                    </lightning-input>
-
-                </div>
-
-                <!-- COUT -->
-                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
-
-                    <lightning-input
-                        type="number"
-                        label="Coût total"
-                        value={cost}
-                        onchange={handleCostChange}
-                        required>
-                    </lightning-input>
-
-                </div>
+                <lightning-input
+                    label="Destination"
+                    value={destination}
+                    onchange={handleDestinationChange}
+                    required>
+                </lightning-input>
 
             </div>
 
-            <!-- BOUTONS -->
-            <div class="slds-m-top_medium">
 
-                <template if:false={isEditMode}>
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
 
-                    <lightning-button
-                        variant="brand"
-                        label="Créer le voyage"
-                        icon-name="utility:add"
-                        onclick={handleCreate}>
-                    </lightning-button>
+                <lightning-input
+                    type="date"
+                    label="Date de début"
+                    value={startDate}
+                    onchange={handleStartDateChange}
+                    required>
+                </lightning-input>
 
-                </template>
+            </div>
 
-                <template if:true={isEditMode}>
 
-                    <lightning-button
-                        variant="brand"
-                        label="Enregistrer les modifications"
-                        icon-name="utility:save"
-                        onclick={handleUpdate}>
-                    </lightning-button>
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
 
-                    <lightning-button
-                        class="slds-m-left_small"
-                        label="Annuler"
-                        onclick={handleCancelEdit}>
-                    </lightning-button>
+                <lightning-input
+                    type="date"
+                    label="Date de fin"
+                    value={endDate}
+                    onchange={handleEndDateChange}
+                    required>
+                </lightning-input>
 
-                </template>
+            </div>
+
+
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+
+                <lightning-input
+                    type="number"
+                    label="Nombre de participants"
+                    value={participants}
+                    onchange={handleParticipantsChange}
+                    min="0"
+                    required>
+                </lightning-input>
+
+            </div>
+
+
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+
+                <lightning-input
+                    type="number"
+                    label="Budget total"
+                    value={budget}
+                    onchange={handleBudgetChange}
+                    min="0">
+                </lightning-input>
+
+            </div>
+
+
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+
+                <lightning-input
+                    type="number"
+                    label="Coût total"
+                    value={cost}
+                    onchange={handleCostChange}
+                    min="0">
+                </lightning-input>
 
             </div>
 
         </div>
 
-        <!-- SEPARATION -->
-        <div class="slds-border_top slds-m-horizontal_medium"></div>
 
-        <!-- LISTE -->
-        <div class="slds-p-around_medium">
+        <div class="slds-m-top_medium">
 
-            <div class="slds-grid slds-grid_align-spread slds-m-bottom_medium">
-
-                <h2 class="slds-text-heading_medium">
-                    Voyages existants
-                </h2>
+            <template if:false={isEditMode}>
 
                 <lightning-button
-                    label="Actualiser"
-                    icon-name="utility:refresh"
-                    onclick={handleRefresh}>
+                    variant="brand"
+                    label="Créer"
+                    icon-name="utility:add"
+                    onclick={handleCreate}>
                 </lightning-button>
 
-            </div>
+            </template>
 
-            <template if:true={trips}>
 
-                <template for:each={trips} for:item="trip">
+            <template if:true={isEditMode}>
 
-                    <article
-                        key={trip.Id}
-                        class="slds-box slds-m-bottom_small">
+                <lightning-button
+                    variant="brand"
+                    label="Enregistrer"
+                    icon-name="utility:save"
+                    onclick={handleUpdate}>
+                </lightning-button>
 
-                        <div class="slds-grid slds-wrap">
 
-                            <div class="slds-col slds-size_1-of-1 slds-medium-size_8-of-12">
+                <lightning-button
+                    class="slds-m-left_small"
+                    label="Annuler"
+                    onclick={handleCancelEdit}>
+                </lightning-button>
 
-                                <p class="slds-text-heading_small">
-                                    {trip.Name}
-                                </p>
+            </template>
 
-                                <p>
-                                    <strong>Destination :</strong>
-                                    {trip.Destination__c}
-                                </p>
+        </div>
 
-                                <p>
-                                    <strong>Début :</strong>
-                                    {trip.Start_Date__c}
-                                </p>
+    </div>
 
-                                <p>
-                                    <strong>Fin :</strong>
-                                    {trip.End_Date__c}
-                                </p>
 
-                                <p>
-                                    <strong>Statut :</strong>
-                                    {trip.Status__c}
-                                </p>
+    <div class="slds-border_top slds-m-horizontal_medium"></div>
 
-                                <p>
-                                    <strong>Participants :</strong>
-                                    {trip.Number_of_Participants__c}
-                                </p>
 
-                                <p>
-                                    <strong>Budget :</strong>
-                                    {trip.Total_Budget__c}
-                                </p>
+    <div class="slds-p-around_medium">
 
-                                <p>
-                                    <strong>Coût :</strong>
-                                    {trip.Total_Cost__c}
-                                </p>
+        <div class="slds-grid slds-grid_align-spread slds-m-bottom_medium">
 
-                            </div>
+            <h3 class="slds-text-heading_medium">
+                Voyages existants
+            </h3>
 
-                            <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12">
 
-                                <lightning-button
-                                    label="Modifier"
-                                    icon-name="utility:edit"
-                                    data-id={trip.Id}
-                                    onclick={handleSelectTrip}>
-                                </lightning-button>
+            <lightning-button
+                label="Actualiser"
+                icon-name="utility:refresh"
+                onclick={handleRefresh}>
+            </lightning-button>
 
-                                <lightning-button
-                                    class="slds-m-left_small"
-                                    variant="destructive"
-                                    label="Supprimer"
-                                    icon-name="utility:delete"
-                                    data-id={trip.Id}
-                                    onclick={handleDelete}>
-                                </lightning-button>
+        </div>
 
-                            </div>
+
+        <template if:true={trips}>
+
+            <template
+                for:each={trips}
+                for:item="trip">
+
+                <article
+                    key={trip.Id}
+                    class="slds-box slds-m-bottom_small">
+
+                    <div class="slds-grid slds-wrap">
+
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_8-of-12">
+
+                            <p class="slds-text-heading_small">
+                                {trip.Name}
+                            </p>
+
+                            <p>
+                                <strong>Destination :</strong>
+                                {trip.Destination__c}
+                            </p>
+
+                            <p>
+                                <strong>Début :</strong>
+                                {trip.Start_Date__c}
+                            </p>
+
+                            <p>
+                                <strong>Fin :</strong>
+                                {trip.End_Date__c}
+                            </p>
+
+                            <p>
+                                <strong>Statut :</strong>
+                                {trip.Status__c}
+                            </p>
+
+                            <p>
+                                <strong>Participants :</strong>
+                                {trip.Number_of_Participants__c}
+                            </p>
+
+                            <p>
+                                <strong>Budget :</strong>
+                                {trip.Total_Budget__c}
+                            </p>
+
+                            <p>
+                                <strong>Coût :</strong>
+                                {trip.Total_Cost__c}
+                            </p>
 
                         </div>
 
-                    </article>
 
-                </template>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12">
+
+                            <lightning-button
+                                label="Modifier"
+                                icon-name="utility:edit"
+                                data-id={trip.Id}
+                                onclick={handleSelectTrip}>
+                            </lightning-button>
+
+
+                            <lightning-button
+                                class="slds-m-left_small"
+                                variant="destructive"
+                                label="Supprimer"
+                                data-id={trip.Id}
+                                icon-name="utility:delete"
+                                onclick={handleDelete}>
+                            </lightning-button>
+
+                        </div>
+
+                    </div>
+
+                </article>
 
             </template>
 
-            <template if:false={trips}>
+        </template>
 
-                <p>
-                    Aucun voyage à afficher.
-                </p>
+
+        <template if:false={trips}>
+
+            <p>
+                Aucun voyage à afficher.
+            </p>
+
+        </template>
+
+    </div>
+
+
+    <!-- =====================================================
+         ACCOUNTS
+         ===================================================== -->
+
+    <div class="slds-border_top slds-m-horizontal_medium"></div>
+
+
+    <div class="slds-p-around_medium">
+
+        <h2 class="slds-text-heading_large slds-m-bottom_medium">
+            Comptes clients
+        </h2>
+
+
+        <h3 class="slds-text-heading_medium slds-m-bottom_medium">
+
+            <template if:true={isAccountEditMode}>
+                Modifier un compte
+            </template>
+
+            <template if:false={isAccountEditMode}>
+                Créer un compte
+            </template>
+
+        </h3>
+
+
+        <div class="slds-grid slds-wrap slds-gutters">
+
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+
+                <lightning-input
+                    label="Nom"
+                    value={accountName}
+                    onchange={handleAccountNameChange}
+                    required>
+                </lightning-input>
+
+            </div>
+
+
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+
+                <lightning-input
+                    type="tel"
+                    label="Téléphone"
+                    value={accountPhone}
+                    onchange={handleAccountPhoneChange}>
+                </lightning-input>
+
+            </div>
+
+
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+
+                <lightning-input
+                    type="url"
+                    label="Site web"
+                    value={accountWebsite}
+                    onchange={handleAccountWebsiteChange}>
+                </lightning-input>
+
+            </div>
+
+
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+
+                <lightning-input
+                    label="Secteur"
+                    value={accountIndustry}
+                    onchange={handleAccountIndustryChange}>
+                </lightning-input>
+
+            </div>
+
+        </div>
+
+
+        <div class="slds-m-top_medium">
+
+            <template if:false={isAccountEditMode}>
+
+                <lightning-button
+                    variant="brand"
+                    label="Créer"
+                    icon-name="utility:add"
+                    onclick={handleAccountCreate}>
+                </lightning-button>
+
+            </template>
+
+
+            <template if:true={isAccountEditMode}>
+
+                <lightning-button
+                    variant="brand"
+                    label="Enregistrer"
+                    icon-name="utility:save"
+                    onclick={handleAccountUpdate}>
+                </lightning-button>
+
+
+                <lightning-button
+                    class="slds-m-left_small"
+                    label="Annuler"
+                    onclick={handleCancelAccountEdit}>
+                </lightning-button>
 
             </template>
 
         </div>
 
-        <!-- ERREUR -->
-        <template if:true={error}>
+    </div>
 
-            <div class="slds-p-around_medium slds-text-color_error">
 
-                {error}
+    <div class="slds-border_top slds-m-horizontal_medium"></div>
 
-            </div>
+
+    <div class="slds-p-around_medium">
+
+        <h3 class="slds-text-heading_medium slds-m-bottom_medium">
+            Comptes existants
+        </h3>
+
+
+        <template if:true={accounts}>
+
+            <template
+                for:each={accounts}
+                for:item="account">
+
+                <article
+                    key={account.Id}
+                    class="slds-box slds-m-bottom_small">
+
+                    <p class="slds-text-heading_small">
+                        {account.Name}
+                    </p>
+
+                    <p>
+                        <strong>Téléphone :</strong>
+                        {account.Phone}
+                    </p>
+
+                    <p>
+                        <strong>Site web :</strong>
+                        {account.Website}
+                    </p>
+
+                    <p>
+                        <strong>Secteur :</strong>
+                        {account.Industry}
+                    </p>
+
+
+                    <div class="slds-m-top_small">
+
+                        <lightning-button
+                            label="Modifier"
+                            icon-name="utility:edit"
+                            data-id={account.Id}
+                            onclick={handleSelectAccount}>
+                        </lightning-button>
+
+
+                        <lightning-button
+                            class="slds-m-left_small"
+                            variant="destructive"
+                            label="Supprimer"
+                            icon-name="utility:delete"
+                            data-id={account.Id}
+                            onclick={handleAccountDelete}>
+                        </lightning-button>
+
+                    </div>
+
+                </article>
+
+            </template>
 
         </template>
 
-    </lightning-card>
+    </div>
+
+
+    <!-- =====================================================
+         OPPORTUNITIES
+         ===================================================== -->
+
+    <div class="slds-border_top slds-m-horizontal_medium"></div>
+
+
+    <div class="slds-p-around_medium">
+
+        <h2 class="slds-text-heading_large slds-m-bottom_medium">
+            Opportunités
+        </h2>
+
+
+        <h3 class="slds-text-heading_medium slds-m-bottom_medium">
+
+            <template if:true={isOpportunityEditMode}>
+                Modifier une opportunité
+            </template>
+
+            <template if:false={isOpportunityEditMode}>
+                Créer une opportunité
+            </template>
+
+        </h3>
+
+
+        <div class="slds-grid slds-wrap slds-gutters">
+
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+
+                <lightning-input
+                    label="Nom"
+                    value={opportunityName}
+                    onchange={handleOpportunityNameChange}
+                    required>
+                </lightning-input>
+
+            </div>
+
+
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+
+                <lightning-combobox
+                    label="Compte"
+                    value={opportunityAccountId}
+                    options={accountOptions}
+                    onchange={handleOpportunityAccountChange}
+                    required>
+                </lightning-combobox>
+
+            </div>
+
+
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+
+                <lightning-combobox
+                    label="Étape"
+                    value={opportunityStage}
+                    options={stageOptions}
+                    onchange={handleOpportunityStageChange}
+                    required>
+                </lightning-combobox>
+
+            </div>
+
+
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+
+                <lightning-input
+                    type="date"
+                    label="Date de clôture"
+                    value={opportunityCloseDate}
+                    onchange={handleOpportunityCloseDateChange}
+                    required>
+                </lightning-input>
+
+            </div>
+
+
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+
+                <lightning-input
+                    type="number"
+                    label="Montant"
+                    value={opportunityAmount}
+                    onchange={handleOpportunityAmountChange}
+                    min="0">
+                </lightning-input>
+
+            </div>
+
+
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+
+                <lightning-input
+                    label="Destination"
+                    value={opportunityDestination}
+                    onchange={handleOpportunityDestinationChange}>
+                </lightning-input>
+
+            </div>
+
+
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+
+                <lightning-input
+                    type="date"
+                    label="Date de début"
+                    value={opportunityStartDate}
+                    onchange={handleOpportunityStartDateChange}>
+                </lightning-input>
+
+            </div>
+
+
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+
+                <lightning-input
+                    type="date"
+                    label="Date de fin"
+                    value={opportunityEndDate}
+                    onchange={handleOpportunityEndDateChange}>
+                </lightning-input>
+
+            </div>
+
+
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+
+                <lightning-input
+                    type="number"
+                    label="Nombre de participants"
+                    value={opportunityParticipants}
+                    onchange={handleOpportunityParticipantsChange}
+                    min="0">
+                </lightning-input>
+
+            </div>
+
+        </div>
+
+
+        <div class="slds-m-top_medium">
+
+            <template if:false={isOpportunityEditMode}>
+
+                <lightning-button
+                    variant="brand"
+                    label="Créer"
+                    icon-name="utility:add"
+                    onclick={handleOpportunityCreate}>
+                </lightning-button>
+
+            </template>
+
+
+            <template if:true={isOpportunityEditMode}>
+
+                <lightning-button
+                    variant="brand"
+                    label="Enregistrer"
+                    icon-name="utility:save"
+                    onclick={handleOpportunityUpdate}>
+                </lightning-button>
+
+
+                <lightning-button
+                    class="slds-m-left_small"
+                    label="Annuler"
+                    onclick={handleCancelOpportunityEdit}>
+                </lightning-button>
+
+            </template>
+
+        </div>
+
+    </div>
+
+
+    <div class="slds-border_top slds-m-horizontal_medium"></div>
+
+
+    <div class="slds-p-around_medium">
+
+        <h3 class="slds-text-heading_medium slds-m-bottom_medium">
+            Opportunités existantes
+        </h3>
+
+
+        <template if:true={opportunities}>
+
+            <template
+                for:each={opportunities}
+                for:item="opportunity">
+
+                <article
+                    key={opportunity.Id}
+                    class="slds-box slds-m-bottom_small">
+
+                    <p class="slds-text-heading_small">
+                        {opportunity.Name}
+                    </p>
+
+                    <p>
+                        <strong>Compte :</strong>
+                        {opportunity.AccountName}
+                    </p>
+
+                    <p>
+                        <strong>Étape :</strong>
+                        {opportunity.StageName}
+                    </p>
+
+                    <p>
+                        <strong>Montant :</strong>
+                        {opportunity.Amount}
+                    </p>
+
+                    <p>
+                        <strong>Destination :</strong>
+                        {opportunity.Destination__c}
+                    </p>
+
+                    <p>
+                        <strong>Début :</strong>
+                        {opportunity.Start_Date__c}
+                    </p>
+
+                    <p>
+                        <strong>Fin :</strong>
+                        {opportunity.End_Date__c}
+                    </p>
+
+                    <p>
+                        <strong>Participants :</strong>
+                        {opportunity.Number_of_Participants__c}
+                    </p>
+
+
+                    <div class="slds-m-top_small">
+
+                        <lightning-button
+                            label="Modifier"
+                            icon-name="utility:edit"
+                            data-id={opportunity.Id}
+                            onclick={handleSelectOpportunity}>
+                        </lightning-button>
+
+
+                        <lightning-button
+                            class="slds-m-left_small"
+                            variant="destructive"
+                            label="Supprimer"
+                            icon-name="utility:delete"
+                            data-id={opportunity.Id}
+                            onclick={handleOpportunityDelete}>
+                        </lightning-button>
+
+                    </div>
+
+                </article>
+
+            </template>
+
+        </template>
+
+    </div>
+
+
+    <!-- =====================================================
+         CONTRACTS
+         ===================================================== -->
+
+    <div class="slds-border_top slds-m-horizontal_medium"></div>
+
+
+    <div class="slds-p-around_medium">
+
+        <h2 class="slds-text-heading_large slds-m-bottom_medium">
+            Contrats
+        </h2>
+
+
+        <h3 class="slds-text-heading_medium slds-m-bottom_medium">
+
+            <template if:true={isContractEditMode}>
+                Modifier un contrat
+            </template>
+
+            <template if:false={isContractEditMode}>
+                Créer un contrat
+            </template>
+
+        </h3>
+
+
+        <div class="slds-grid slds-wrap slds-gutters">
+
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+
+                <lightning-combobox
+                    label="Compte"
+                    value={contractAccountId}
+                    options={accountOptions}
+                    onchange={handleContractAccountChange}
+                    required>
+                </lightning-combobox>
+
+            </div>
+
+
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+
+                <lightning-input
+                    type="date"
+                    label="Date de début"
+                    value={contractStartDate}
+                    onchange={handleContractStartDateChange}
+                    required>
+                </lightning-input>
+
+            </div>
+
+
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+
+                <lightning-input
+                    type="number"
+                    label="Durée du contrat (mois)"
+                    value={contractTerm}
+                    onchange={handleContractTermChange}
+                    min="1"
+                    step="1"
+                    required>
+                </lightning-input>
+
+            </div>
+
+
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+
+                <lightning-combobox
+                    label="Statut"
+                    value={contractStatus}
+                    options={contractStatusOptions}
+                    onchange={handleContractStatusChange}
+                    required>
+                </lightning-combobox>
+
+            </div>
+
+
+            <div class="slds-col slds-size_1-of-1">
+
+                <lightning-textarea
+                    label="Description"
+                    value={contractDescription}
+                    onchange={handleContractDescriptionChange}>
+                </lightning-textarea>
+
+            </div>
+
+        </div>
+
+
+        <div class="slds-m-top_medium">
+
+            <template if:false={isContractEditMode}>
+
+                <lightning-button
+                    variant="brand"
+                    label="Créer"
+                    icon-name="utility:add"
+                    onclick={handleContractCreate}>
+                </lightning-button>
+
+            </template>
+
+
+            <template if:true={isContractEditMode}>
+
+                <lightning-button
+                    variant="brand"
+                    label="Enregistrer"
+                    icon-name="utility:save"
+                    onclick={handleContractUpdate}>
+                </lightning-button>
+
+
+                <lightning-button
+                    class="slds-m-left_small"
+                    label="Annuler"
+                    onclick={handleCancelContractEdit}>
+                </lightning-button>
+
+            </template>
+
+        </div>
+
+    </div>
+
+
+    <div class="slds-border_top slds-m-horizontal_medium"></div>
+
+
+    <div class="slds-p-around_medium">
+
+        <h3 class="slds-text-heading_medium slds-m-bottom_medium">
+            Contrats existants
+        </h3>
+
+
+        <template if:true={contracts}>
+
+            <template
+                for:each={contracts}
+                for:item="contractRecord">
+
+                <article
+                    key={contractRecord.Id}
+                    class="slds-box slds-m-bottom_small">
+
+                    <p class="slds-text-heading_small">
+                        {contractRecord.ContractNumber}
+                    </p>
+
+                    <p>
+                        <strong>Compte :</strong>
+                        {contractRecord.AccountName}
+                    </p>
+
+                    <p>
+                        <strong>Date de début :</strong>
+                        {contractRecord.StartDate}
+                    </p>
+
+                    <p>
+                        <strong>Date de fin :</strong>
+                        {contractRecord.EndDate}
+                    </p>
+
+                    <p>
+                        <strong>Durée :</strong>
+                        {contractRecord.ContractTerm} mois
+                    </p>
+
+                    <p>
+                        <strong>Statut :</strong>
+                        {contractRecord.Status}
+                    </p>
+
+                    <template if:true={contractRecord.Description}>
+
+                        <p>
+                            <strong>Description :</strong>
+                            {contractRecord.Description}
+                        </p>
+
+                    </template>
+
+
+                    <div class="slds-m-top_small">
+
+                        <lightning-button
+                            label="Modifier"
+                            icon-name="utility:edit"
+                            data-id={contractRecord.Id}
+                            onclick={handleSelectContract}>
+                        </lightning-button>
+
+
+                        <lightning-button
+                            class="slds-m-left_small"
+                            variant="destructive"
+                            label="Supprimer"
+                            icon-name="utility:delete"
+                            data-id={contractRecord.Id}
+                            onclick={handleContractDelete}>
+                        </lightning-button>
+
+                    </div>
+
+                </article>
+
+            </template>
+
+        </template>
+
+
+        <template if:false={contracts}>
+
+            <p>
+                Aucun contrat à afficher.
+            </p>
+
+        </template>
+
+    </div>
 
 </template>
