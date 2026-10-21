@@ -49,12 +49,16 @@ public with sharing class TripCrudController {
             Total_Cost__c = totalCost
         );
 
-        insert trip;
+        try {
+            insert trip;
+        } catch (DmlException e) {
+            throw new AuraHandledException(
+                e.getDmlMessage(0)
+            );
+        }
 
         return trip;
     }
-
-
 
     @AuraEnabled(cacheable=true)
     public static List<Trip__c> getTrips() {
@@ -74,7 +78,6 @@ public with sharing class TripCrudController {
             ORDER BY Start_Date__c ASC
         ];
     }
-
 
     @AuraEnabled
     public static void updateTrip(Trip__c trip) {
@@ -115,9 +118,14 @@ public with sharing class TripCrudController {
             );
         }
 
-        update trip;
+        try {
+            update trip;
+        } catch (DmlException e) {
+            throw new AuraHandledException(
+                e.getDmlMessage(0)
+            );
+        }
     }
-
 
     @AuraEnabled
     public static void deleteTrip(Id tripId) {

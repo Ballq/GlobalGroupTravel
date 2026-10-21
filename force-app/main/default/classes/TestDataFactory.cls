@@ -1,36 +1,48 @@
 @IsTest
 public class TestDataFactory {
 
-/*
- * =========================
- * ACCOUNT
- * =========================
- */
+// ============================================================
+// ACCOUNT
+// ============================================================
 
 public static Account createAccount() {
-
     return new Account(
         Name = 'Test Account'
     );
 }
 
 public static Account createAccount(String name) {
-
     return new Account(
         Name = name
     );
 }
- 
-/*
- * =========================
- * OPPORTUNITY
- * =========================
- */
- 
-public static Opportunity createOpportunity(
-    Id accountId
-) {
 
+public static Account createTestAccount() {
+    return new Account(
+        Name = 'Test Account'
+    );
+}
+
+
+// ============================================================
+// OPPORTUNITY
+// ============================================================
+
+public static Opportunity createOpportunity(Id accountId) {
+    return new Opportunity(
+        Name = 'Test Opportunity',
+        AccountId = accountId,
+        StageName = 'Prospecting',
+        CloseDate = Date.today().addDays(30),
+        Destination__c = 'Paris',
+        Start_Date__c = Date.today().addDays(10),
+        End_Date__c = Date.today().addDays(15),
+        Number_of_Participants__c = 20,
+        Amount = 5000
+    );
+}
+
+public static Opportunity createTestOpportunity(Id accountId) {
     return new Opportunity(
         Name = 'Test Opportunity',
         AccountId = accountId,
@@ -54,7 +66,6 @@ public static Opportunity createOpportunity(
     Integer participants,
     Decimal amount
 ) {
-
     return new Opportunity(
         Name = name,
         AccountId = accountId,
@@ -68,11 +79,10 @@ public static Opportunity createOpportunity(
     );
 }
 
-/*
- * =========================
- * TRIP PARAMETRE
- * =========================
- */
+
+// ============================================================
+// TRIP
+// ============================================================
 
 public static Trip__c createTrip(
     String destination,
@@ -80,7 +90,6 @@ public static Trip__c createTrip(
     Integer startDaysFromToday,
     Integer endDaysFromToday
 ) {
-
     return new Trip__c(
         Status__c = 'A venir',
         Destination__c = destination,
@@ -92,15 +101,7 @@ public static Trip__c createTrip(
     );
 }
 
-
-/*
- * =========================
- * TRIP - VALID DATES
- * =========================
- */
-
 public static Trip__c createValidDateTrip() {
-
     return new Trip__c(
         Status__c = 'A venir',
         Destination__c = 'Lyon',
@@ -112,15 +113,7 @@ public static Trip__c createValidDateTrip() {
     );
 }
 
-
-/*
- * =========================
- * TRIP - INVALID DATES
- * =========================
- */
-
 public static Trip__c createInvalidDateTrip() {
-
     return new Trip__c(
         Status__c = 'A venir',
         Destination__c = 'Marseille',
@@ -132,15 +125,7 @@ public static Trip__c createInvalidDateTrip() {
     );
 }
 
-
-/*
- * =========================
- * TRIP - CANCELLATION
- * =========================
- */
-
 public static Trip__c createTripWithLessThan10Participants() {
-
     return new Trip__c(
         Status__c = 'A venir',
         Destination__c = 'Paris',
@@ -153,7 +138,6 @@ public static Trip__c createTripWithLessThan10Participants() {
 }
 
 public static Trip__c createTripWith10Participants() {
-
     return new Trip__c(
         Status__c = 'A venir',
         Destination__c = 'Lyon',
@@ -165,15 +149,7 @@ public static Trip__c createTripWith10Participants() {
     );
 }
 
-
-/*
- * =========================
- * TRIP - STATUS BATCH
- * =========================
- */
-
 public static Trip__c createUpcomingTrip() {
-
     return new Trip__c(
         Status__c = 'A venir',
         Destination__c = 'Paris',
@@ -186,7 +162,6 @@ public static Trip__c createUpcomingTrip() {
 }
 
 public static Trip__c createCurrentTrip() {
-
     return new Trip__c(
         Status__c = 'A venir',
         Destination__c = 'Lyon',
@@ -199,7 +174,6 @@ public static Trip__c createCurrentTrip() {
 }
 
 public static Trip__c createFinishedTrip() {
-
     return new Trip__c(
         Status__c = 'En cours',
         Destination__c = 'Marseille',
@@ -211,17 +185,7 @@ public static Trip__c createFinishedTrip() {
     );
 }
 
-
-/*
- * =========================
- * TRIP - CRUD TEST
- * =========================
- */
-
-public static Trip__c createCrudTrip(
-    String destination
-) {
-
+public static Trip__c createCrudTrip(String destination) {
     return new Trip__c(
         Status__c = 'A venir',
         Destination__c = destination,
@@ -232,6 +196,5 @@ public static Trip__c createCrudTrip(
         Total_Cost__c = 4000
     );
 }
-
 
 }
