@@ -1,6 +1,9 @@
+// Tests du batch TripCancellationBatch : annulation des voyages de moins de 10 participants.
 @IsTest
 private class TripCancellationBatchTest {
 
+// TEST : voyage qui part dans 7 jours avec 5 participants.
+// Apres le batch, on verifie que son statut est Annule.
 @IsTest
 static void testTripIsCancelledWhenLessThan10Participants() {
 
@@ -8,6 +11,7 @@ static void testTripIsCancelledWhenLessThan10Participants() {
 
     insert trip;
 
+    // startTest : ici commence la partie du test qui execute le code a tester.
     Test.startTest();
 
     Database.executeBatch(new TripCancellationBatch());
@@ -20,6 +24,7 @@ static void testTripIsCancelledWhenLessThan10Participants() {
         WHERE Id = :trip.Id
     ];
 
+    // assert : le test echoue si le resultat obtenu n est pas celui attendu.
     System.assertEquals(
         'Annulé',
         updatedTrip.Status__c,
@@ -27,6 +32,8 @@ static void testTripIsCancelledWhenLessThan10Participants() {
     );
 }
 
+// TEST : voyage qui part dans 7 jours avec 10 participants.
+// Apres le batch, on verifie que son statut reste A venir.
 @IsTest
 static void testTripIsNotCancelledWith10OrMoreParticipants() {
 
@@ -34,6 +41,7 @@ static void testTripIsNotCancelledWith10OrMoreParticipants() {
 
     insert trip;
 
+    // startTest : ici commence la partie du test qui execute le code a tester.
     Test.startTest();
 
     Database.executeBatch(new TripCancellationBatch());
@@ -46,6 +54,7 @@ static void testTripIsNotCancelledWith10OrMoreParticipants() {
         WHERE Id = :trip.Id
     ];
 
+    // assert : le test echoue si le resultat obtenu n est pas celui attendu.
     System.assertEquals(
         'A venir',
         updatedTrip.Status__c,

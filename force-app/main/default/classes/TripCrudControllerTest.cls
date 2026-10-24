@@ -1,13 +1,13 @@
+// Tests du controleur TripCrudController : creer, lire, modifier, supprimer un voyage, cas normaux et cas d erreur.
 @IsTest
 public class TripCrudControllerTest {
 
-    // ============================================================
-    // CREATE
-    // ============================================================
-
+    // TEST : creation d un voyage valide.
+    // On verifie qu il est bien enregistre avec les bonnes valeurs.
     @IsTest
     static void testCreateTrip() {
 
+        // startTest : ici commence la partie du test qui execute le code a tester.
         Test.startTest();
 
         Trip__c trip = TripCrudController.createTrip(
@@ -21,6 +21,7 @@ public class TripCrudControllerTest {
 
         Test.stopTest();
 
+        // assert : le test echoue si le resultat obtenu n est pas celui attendu.
         System.assertNotEquals(
             null,
             trip.Id,
@@ -76,14 +77,17 @@ public class TripCrudControllerTest {
         );
     }
 
-
+    // TEST : creation sans destination (valeur vide).
+    // Le champ est obligatoire : on s attend a une erreur (AuraHandledException).
     @IsTest
     static void testCreateTripWithEmptyDestination() {
 
         Boolean exceptionThrown = false;
 
+        // try/catch : on attrape l erreur attendue pour verifier qu elle est bien levee.
         try {
 
+            // startTest : ici commence la partie du test qui execute le code a tester.
             Test.startTest();
 
             TripCrudController.createTrip(
@@ -102,20 +106,24 @@ public class TripCrudControllerTest {
             exceptionThrown = true;
         }
 
+        // assert : le test echoue si le resultat obtenu n est pas celui attendu.
         System.assert(
             exceptionThrown,
             'Une exception devait être levée lorsque la destination est vide.'
         );
     }
 
-
+    // TEST : creation sans date de debut (valeur vide).
+    // Le champ est obligatoire : on s attend a une erreur (AuraHandledException).
     @IsTest
     static void testCreateTripWithNullStartDate() {
 
         Boolean exceptionThrown = false;
 
+        // try/catch : on attrape l erreur attendue pour verifier qu elle est bien levee.
         try {
 
+            // startTest : ici commence la partie du test qui execute le code a tester.
             Test.startTest();
 
             TripCrudController.createTrip(
@@ -134,20 +142,24 @@ public class TripCrudControllerTest {
             exceptionThrown = true;
         }
 
+        // assert : le test echoue si le resultat obtenu n est pas celui attendu.
         System.assert(
             exceptionThrown,
             'Une exception devait être levée lorsque la date de début est null.'
         );
     }
 
-
+    // TEST : creation sans date de fin (valeur vide).
+    // Le champ est obligatoire : on s attend a une erreur (AuraHandledException).
     @IsTest
     static void testCreateTripWithNullEndDate() {
 
         Boolean exceptionThrown = false;
 
+        // try/catch : on attrape l erreur attendue pour verifier qu elle est bien levee.
         try {
 
+            // startTest : ici commence la partie du test qui execute le code a tester.
             Test.startTest();
 
             TripCrudController.createTrip(
@@ -166,20 +178,24 @@ public class TripCrudControllerTest {
             exceptionThrown = true;
         }
 
+        // assert : le test echoue si le resultat obtenu n est pas celui attendu.
         System.assert(
             exceptionThrown,
             'Une exception devait être levée lorsque la date de fin est null.'
         );
     }
 
-
+    // TEST : creation avec des dates incoherentes (la fin n est pas apres le debut).
+    // On s attend a une erreur (AuraHandledException).
     @IsTest
     static void testCreateTripWithInvalidDates() {
 
         Boolean exceptionThrown = false;
 
+        // try/catch : on attrape l erreur attendue pour verifier qu elle est bien levee.
         try {
 
+            // startTest : ici commence la partie du test qui execute le code a tester.
             Test.startTest();
 
             TripCrudController.createTrip(
@@ -198,20 +214,24 @@ public class TripCrudControllerTest {
             exceptionThrown = true;
         }
 
+        // assert : le test echoue si le resultat obtenu n est pas celui attendu.
         System.assert(
             exceptionThrown,
             'Une exception devait être levée lorsque la date de fin est avant la date de début.'
         );
     }
 
-
+    // TEST : creation sans nombre de participants (valeur vide).
+    // Le champ est obligatoire : on s attend a une erreur (AuraHandledException).
     @IsTest
     static void testCreateTripWithNullParticipants() {
 
         Boolean exceptionThrown = false;
 
+        // try/catch : on attrape l erreur attendue pour verifier qu elle est bien levee.
         try {
 
+            // startTest : ici commence la partie du test qui execute le code a tester.
             Test.startTest();
 
             TripCrudController.createTrip(
@@ -230,17 +250,15 @@ public class TripCrudControllerTest {
             exceptionThrown = true;
         }
 
+        // assert : le test echoue si le resultat obtenu n est pas celui attendu.
         System.assert(
             exceptionThrown,
             'Une exception devait être levée lorsque le nombre de participants est null.'
         );
     }
 
-
-    // ============================================================
-    // GET
-    // ============================================================
-
+    // TEST : lecture de la liste des voyages.
+    // On cree des donnees puis on verifie le contenu de la liste renvoyee.
     @IsTest
     static void testGetTrips() {
 
@@ -250,6 +268,7 @@ public class TripCrudControllerTest {
 
         insert trip;
 
+        // startTest : ici commence la partie du test qui execute le code a tester.
         Test.startTest();
 
         List<Trip__c> trips =
@@ -257,6 +276,7 @@ public class TripCrudControllerTest {
 
         Test.stopTest();
 
+        // assert : le test echoue si le resultat obtenu n est pas celui attendu.
         System.assert(
             !trips.isEmpty(),
             'La liste des voyages ne doit pas être vide.'
@@ -283,11 +303,8 @@ public class TripCrudControllerTest {
         );
     }
 
-
-    // ============================================================
-    // UPDATE
-    // ============================================================
-
+    // TEST : modification d un voyage existant.
+    // On verifie que les nouvelles valeurs sont bien enregistrees.
     @IsTest
     static void testUpdateTrip() {
 
@@ -303,6 +320,7 @@ public class TripCrudControllerTest {
         trip.Total_Budget__c = 7000;
         trip.Total_Cost__c = 6000;
 
+        // startTest : ici commence la partie du test qui execute le code a tester.
         Test.startTest();
 
         TripCrudController.updateTrip(trip);
@@ -319,6 +337,7 @@ public class TripCrudControllerTest {
             WHERE Id = :trip.Id
         ];
 
+        // assert : le test echoue si le resultat obtenu n est pas celui attendu.
         System.assertEquals(
             'Lyon',
             updatedTrip.Destination__c
@@ -340,14 +359,17 @@ public class TripCrudControllerTest {
         );
     }
 
-
+    // TEST : modification avec un voyage null (objet vide).
+    // On s attend a une erreur (AuraHandledException).
     @IsTest
     static void testUpdateTripWithNullTrip() {
 
         Boolean exceptionThrown = false;
 
+        // try/catch : on attrape l erreur attendue pour verifier qu elle est bien levee.
         try {
 
+            // startTest : ici commence la partie du test qui execute le code a tester.
             Test.startTest();
 
             TripCrudController.updateTrip(null);
@@ -359,13 +381,15 @@ public class TripCrudControllerTest {
             exceptionThrown = true;
         }
 
+        // assert : le test echoue si le resultat obtenu n est pas celui attendu.
         System.assert(
             exceptionThrown,
             'Une exception devait être levée lorsque le voyage est null.'
         );
     }
 
-
+    // TEST : modification sans destination (valeur vide).
+    // Le champ est obligatoire : on s attend a une erreur (AuraHandledException).
     @IsTest
     static void testUpdateTripWithEmptyDestination() {
 
@@ -380,8 +404,10 @@ public class TripCrudControllerTest {
 
         Boolean exceptionThrown = false;
 
+        // try/catch : on attrape l erreur attendue pour verifier qu elle est bien levee.
         try {
 
+            // startTest : ici commence la partie du test qui execute le code a tester.
             Test.startTest();
 
             TripCrudController.updateTrip(trip);
@@ -393,13 +419,15 @@ public class TripCrudControllerTest {
             exceptionThrown = true;
         }
 
+        // assert : le test echoue si le resultat obtenu n est pas celui attendu.
         System.assert(
             exceptionThrown,
             'Une exception devait être levée lorsque la destination est vide.'
         );
     }
 
-
+    // TEST : modification sans date de debut (valeur vide).
+    // Le champ est obligatoire : on s attend a une erreur (AuraHandledException).
     @IsTest
     static void testUpdateTripWithNullStartDate() {
 
@@ -414,8 +442,10 @@ public class TripCrudControllerTest {
 
         Boolean exceptionThrown = false;
 
+        // try/catch : on attrape l erreur attendue pour verifier qu elle est bien levee.
         try {
 
+            // startTest : ici commence la partie du test qui execute le code a tester.
             Test.startTest();
 
             TripCrudController.updateTrip(trip);
@@ -427,13 +457,15 @@ public class TripCrudControllerTest {
             exceptionThrown = true;
         }
 
+        // assert : le test echoue si le resultat obtenu n est pas celui attendu.
         System.assert(
             exceptionThrown,
             'Une exception devait être levée lorsque la date de début est null.'
         );
     }
 
-
+    // TEST : modification sans date de fin (valeur vide).
+    // Le champ est obligatoire : on s attend a une erreur (AuraHandledException).
     @IsTest
     static void testUpdateTripWithNullEndDate() {
 
@@ -448,8 +480,10 @@ public class TripCrudControllerTest {
 
         Boolean exceptionThrown = false;
 
+        // try/catch : on attrape l erreur attendue pour verifier qu elle est bien levee.
         try {
 
+            // startTest : ici commence la partie du test qui execute le code a tester.
             Test.startTest();
 
             TripCrudController.updateTrip(trip);
@@ -461,13 +495,15 @@ public class TripCrudControllerTest {
             exceptionThrown = true;
         }
 
+        // assert : le test echoue si le resultat obtenu n est pas celui attendu.
         System.assert(
             exceptionThrown,
             'Une exception devait être levée lorsque la date de fin est null.'
         );
     }
 
-
+    // TEST : modification avec des dates incoherentes (la fin n est pas apres le debut).
+    // On s attend a une erreur (AuraHandledException).
     @IsTest
     static void testUpdateTripWithInvalidDates() {
 
@@ -486,8 +522,10 @@ public class TripCrudControllerTest {
 
         Boolean exceptionThrown = false;
 
+        // try/catch : on attrape l erreur attendue pour verifier qu elle est bien levee.
         try {
 
+            // startTest : ici commence la partie du test qui execute le code a tester.
             Test.startTest();
 
             TripCrudController.updateTrip(trip);
@@ -499,13 +537,15 @@ public class TripCrudControllerTest {
             exceptionThrown = true;
         }
 
+        // assert : le test echoue si le resultat obtenu n est pas celui attendu.
         System.assert(
             exceptionThrown,
             'Une exception devait être levée lorsque la date de fin est avant la date de début.'
         );
     }
 
-
+    // TEST : modification sans nombre de participants (valeur vide).
+    // Le champ est obligatoire : on s attend a une erreur (AuraHandledException).
     @IsTest
     static void testUpdateTripWithNullParticipants() {
 
@@ -520,8 +560,10 @@ public class TripCrudControllerTest {
 
         Boolean exceptionThrown = false;
 
+        // try/catch : on attrape l erreur attendue pour verifier qu elle est bien levee.
         try {
 
+            // startTest : ici commence la partie du test qui execute le code a tester.
             Test.startTest();
 
             TripCrudController.updateTrip(trip);
@@ -533,17 +575,15 @@ public class TripCrudControllerTest {
             exceptionThrown = true;
         }
 
+        // assert : le test echoue si le resultat obtenu n est pas celui attendu.
         System.assert(
             exceptionThrown,
             'Une exception devait être levée lorsque le nombre de participants est null.'
         );
     }
 
-
-    // ============================================================
-    // DELETE
-    // ============================================================
-
+    // TEST : suppression d un voyage existant.
+    // On verifie qu il n existe plus apres.
     @IsTest
     static void testDeleteTrip() {
 
@@ -554,6 +594,7 @@ public class TripCrudControllerTest {
 
         insert trip;
 
+        // startTest : ici commence la partie du test qui execute le code a tester.
         Test.startTest();
 
         TripCrudController.deleteTrip(
@@ -568,6 +609,7 @@ public class TripCrudControllerTest {
             WHERE Id = :trip.Id
         ];
 
+        // assert : le test echoue si le resultat obtenu n est pas celui attendu.
         System.assertEquals(
             0,
             deletedTrips.size(),
@@ -575,14 +617,17 @@ public class TripCrudControllerTest {
         );
     }
 
-
+    // TEST : suppression sans identifiant (null).
+    // On s attend a une erreur (AuraHandledException).
     @IsTest
     static void testDeleteTripWithNullId() {
 
         Boolean exceptionThrown = false;
 
+        // try/catch : on attrape l erreur attendue pour verifier qu elle est bien levee.
         try {
 
+            // startTest : ici commence la partie du test qui execute le code a tester.
             Test.startTest();
 
             TripCrudController.deleteTrip(null);
@@ -594,6 +639,7 @@ public class TripCrudControllerTest {
             exceptionThrown = true;
         }
 
+        // assert : le test echoue si le resultat obtenu n est pas celui attendu.
         System.assert(
             exceptionThrown,
             'Une exception devait être levée lorsque l’identifiant est null.'

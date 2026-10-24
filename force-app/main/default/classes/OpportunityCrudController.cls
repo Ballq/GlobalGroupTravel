@@ -1,7 +1,10 @@
 
+// Classe qui gere les opportunites (ventes) : creer, lire, modifier, supprimer (CRUD).
+// Appelee par le composant LWC tripManager.
 public with sharing class OpportunityCrudController {
 
-    // CREATE : créer une opportunité
+    // METHODE createOpportunity : cree une opportunite de vente.
+    // Role : valider les donnees avec validateOpportunity, puis enregistrer.
     @AuraEnabled
     public static Opportunity createOpportunity(
         String name,
@@ -14,6 +17,7 @@ public with sharing class OpportunityCrudController {
         Date endDate,
         Decimal numberOfParticipants
     ) {
+        // On appelle la methode de controle commune (nom, compte, etape, dates).
         validateOpportunity(
             name,
             accountId,
@@ -23,6 +27,7 @@ public with sharing class OpportunityCrudController {
             endDate
         );
 
+        // On prepare l opportunite en memoire, avec les champs du voyage (destination, dates, participants).
         Opportunity opportunity = new Opportunity(
             Name = name,
             AccountId = accountId,
@@ -36,6 +41,7 @@ public with sharing class OpportunityCrudController {
         );
 
         try {
+            // insert = on enregistre l opportunite dans la base.
             insert opportunity;
         } catch (DmlException e) {
             throw new AuraHandledException(
@@ -47,8 +53,9 @@ public with sharing class OpportunityCrudController {
         return opportunity;
     }
 
-    // READ : récupérer les opportunités
-    @AuraEnabled(cacheable=true)
+    // METHODE getOpportunities : lit toutes les opportunites, les plus recentes en premier.
+    // Pas de cacheable=true ici : sinon Salesforce renvoie d anciennes donnees gardees en cache et le bouton Actualiser ne marche pas.
+    @AuraEnabled
     public static List<Opportunity> getOpportunities() {
         try {
             return [
@@ -74,7 +81,8 @@ public with sharing class OpportunityCrudController {
         }
     }
 
-    // UPDATE : modifier une opportunité
+    // METHODE updateOpportunity : modifie une opportunite existante.
+    // Role : verifier qu elle a un Id, valider les champs, puis mettre a jour.
     @AuraEnabled
     public static void updateOpportunity(Opportunity opportunity) {
         if (opportunity == null || opportunity.Id == null) {
@@ -84,6 +92,7 @@ public with sharing class OpportunityCrudController {
             );
         }
 
+        // Meme controle que pour la creation.
         validateOpportunity(
             opportunity.Name,
             opportunity.AccountId,
@@ -94,6 +103,7 @@ public with sharing class OpportunityCrudController {
         );
 
         try {
+            // update = on enregistre les modifications.
             update opportunity;
         } catch (DmlException e) {
             throw new AuraHandledException(
@@ -103,7 +113,8 @@ public with sharing class OpportunityCrudController {
         }
     }
 
-    // DELETE : supprimer une opportunité
+    // METHODE deleteOpportunity : supprime une opportunite grace a son Id.
+    // Role : verifier qu elle existe, puis la supprimer.
     @AuraEnabled
     public static void deleteOpportunity(Id opportunityId) {
         if (opportunityId == null) {
@@ -122,6 +133,7 @@ public with sharing class OpportunityCrudController {
                 WHERE Id = :opportunityId
                 LIMIT 1
             ];
+        // Si la requete ne trouve rien, l opportunite n existe pas.
         } catch (QueryException e) {
             throw new AuraHandledException(
                 'Impossible de supprimer l’opportunité : ' +
@@ -130,6 +142,7 @@ public with sharing class OpportunityCrudController {
         }
 
         try {
+            // delete = on supprime l opportunite.
             delete opportunity;
         } catch (DmlException e) {
             throw new AuraHandledException(
@@ -139,7 +152,10 @@ public with sharing class OpportunityCrudController {
         }
     }
 
-    // VALIDATION : contrôles communs à la création et à la modification
+    // METHODE validateOpportunity (private = utilisable seulement dans cette classe).
+    // Role : eviter d ecrire deux fois les memes controles dans create et update.
+    // Elle renvoie une erreur si le nom, le compte, l etape ou la date de cloture manque,
+    // ou si la date de fin du voyage n est pas apres la date de debut.
     private static void validateOpportunity(
         String name,
         Id accountId,
@@ -172,6 +188,7 @@ public with sharing class OpportunityCrudController {
             );
         }
 
+        // On compare les dates du voyage seulement si les deux sont remplies.
         if (startDate != null &&
             endDate != null &&
             endDate <= startDate) {

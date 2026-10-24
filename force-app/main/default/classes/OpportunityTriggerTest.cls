@@ -1,6 +1,9 @@
+// Tests du trigger OpportunityTrigger : creation automatique d un voyage quand l opportunite passe a Closed Won.
 @IsTest
 private class OpportunityTriggerTest {
 
+// TEST : on passe une opportunite a Closed Won.
+// On verifie qu un voyage est cree automatiquement avec les memes infos (destination, dates, participants, montant, compte).
 @IsTest
 static void testTripCreatedWhenOpportunityIsWon() {
 
@@ -12,6 +15,7 @@ static void testTripCreatedWhenOpportunityIsWon() {
     );
     insert opp;
 
+    // startTest : ici commence la partie du test qui execute le code a tester.
     Test.startTest();
 
     opp.StageName = 'Closed Won';
@@ -34,6 +38,7 @@ static void testTripCreatedWhenOpportunityIsWon() {
         LIMIT 1
     ];
 
+    // assert : le test echoue si le resultat obtenu n est pas celui attendu.
     System.assertEquals('A venir', trip.Status__c);
     System.assertEquals('Paris', trip.Destination__c);
     System.assertEquals(Date.today().addDays(10), trip.Start_Date__c);
@@ -44,6 +49,8 @@ static void testTripCreatedWhenOpportunityIsWon() {
     System.assertEquals(opp.Id, trip.Opportunity__c);
 }
 
+// TEST : l opportunite est deja Closed Won et on modifie seulement son montant.
+// On verifie qu aucun nouveau voyage n est cree (pas de doublon).
 @IsTest
 static void testNoTripCreatedIfAlreadyClosedWon() {
 
@@ -64,6 +71,7 @@ static void testNoTripCreatedIfAlreadyClosedWon() {
     );
     insert opp;
 
+    // startTest : ici commence la partie du test qui execute le code a tester.
     Test.startTest();
 
     opp.Amount = 3500;
@@ -77,6 +85,7 @@ static void testNoTripCreatedIfAlreadyClosedWon() {
         WHERE Opportunity__c = :opp.Id
     ];
 
+    // assert : le test echoue si le resultat obtenu n est pas celui attendu.
     System.assertEquals(
         0,
         tripCount,

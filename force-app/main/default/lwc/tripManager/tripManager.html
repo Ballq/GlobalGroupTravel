@@ -1,44 +1,38 @@
 <template>
 
-    <!-- =====================================================
-         MESSAGE D'ERREUR
-         ===================================================== -->
-
+    <!-- Bloc d erreur : visible seulement quand il y a un message d erreur. -->
     <template if:true={errorMessage}>
         <div class="slds-notify slds-notify_alert slds-theme_error slds-m-around_medium">
             {errorMessage}
         </div>
     </template>
 
-
-    <!-- =====================================================
-         TRIPS
-         ===================================================== -->
-
     <div class="slds-p-around_medium">
 
+        <!-- SECTION VOYAGES : formulaire pour creer ou modifier un voyage, puis liste des voyages. -->
         <h2 class="slds-text-heading_large slds-m-bottom_medium">
             Voyages
         </h2>
 
-
         <h3 class="slds-text-heading_medium slds-m-bottom_medium">
 
+            <!-- Titre du formulaire en mode modification (voyage). -->
             <template if:true={isEditMode}>
                 Modifier un voyage
             </template>
 
+            <!-- Titre du formulaire en mode creation (voyage). -->
             <template if:false={isEditMode}>
                 Créer un voyage
             </template>
 
         </h3>
 
-
         <div class="slds-grid slds-wrap slds-gutters">
 
             <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
 
+                <!-- Champ de saisie : Destination (appelle handleDestinationChange a chaque changement). -->
                 <lightning-input
                     label="Destination"
                     value={destination}
@@ -48,9 +42,9 @@
 
             </div>
 
-
             <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
 
+                <!-- Champ de saisie : Date de debut (appelle handleStartDateChange a chaque changement). -->
                 <lightning-input
                     type="date"
                     label="Date de début"
@@ -61,9 +55,9 @@
 
             </div>
 
-
             <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
 
+                <!-- Champ de saisie : Date de fin (appelle handleEndDateChange a chaque changement). -->
                 <lightning-input
                     type="date"
                     label="Date de fin"
@@ -74,9 +68,9 @@
 
             </div>
 
-
             <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
 
+                <!-- Champ de saisie : Nombre de participants (appelle handleParticipantsChange a chaque changement). -->
                 <lightning-input
                     type="number"
                     label="Nombre de participants"
@@ -88,9 +82,9 @@
 
             </div>
 
-
             <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
 
+                <!-- Champ de saisie : Budget total (appelle handleBudgetChange a chaque changement). -->
                 <lightning-input
                     type="number"
                     label="Budget total"
@@ -101,9 +95,9 @@
 
             </div>
 
-
             <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
 
+                <!-- Champ de saisie : Cout total (appelle handleCostChange a chaque changement). -->
                 <lightning-input
                     type="number"
                     label="Coût total"
@@ -116,11 +110,12 @@
 
         </div>
 
-
         <div class="slds-m-top_medium">
 
+            <!-- Bouton Creer : affiche en mode creation (voyage). -->
             <template if:false={isEditMode}>
 
+                <!-- Bouton Creer le voyage. -->
                 <lightning-button
                     variant="brand"
                     label="Créer"
@@ -130,9 +125,10 @@
 
             </template>
 
-
+            <!-- Boutons de modification (Enregistrer / Annuler) : affiches en mode modification (voyage). -->
             <template if:true={isEditMode}>
 
+                <!-- Bouton Enregistrer les modifications du voyage. -->
                 <lightning-button
                     variant="brand"
                     label="Enregistrer"
@@ -140,7 +136,7 @@
                     onclick={handleUpdate}>
                 </lightning-button>
 
-
+                <!-- Bouton Annuler : quitte le mode modification. -->
                 <lightning-button
                     class="slds-m-left_small"
                     label="Annuler"
@@ -153,9 +149,7 @@
 
     </div>
 
-
     <div class="slds-border_top slds-m-horizontal_medium"></div>
-
 
     <div class="slds-p-around_medium">
 
@@ -165,7 +159,7 @@
                 Voyages existants
             </h3>
 
-
+            <!-- Bouton Actualiser : recharge toutes les donnees depuis Salesforce. -->
             <lightning-button
                 label="Actualiser"
                 icon-name="utility:refresh"
@@ -174,7 +168,7 @@
 
         </div>
 
-
+        <!-- Liste des voyages : affichee s il y a des voyages. -->
         <template if:true={trips}>
 
             <template
@@ -230,9 +224,9 @@
 
                         </div>
 
-
                         <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12">
 
+                            <!-- Bouton Modifier ce voyage. -->
                             <lightning-button
                                 label="Modifier"
                                 icon-name="utility:edit"
@@ -240,7 +234,7 @@
                                 onclick={handleSelectTrip}>
                             </lightning-button>
 
-
+                            <!-- Bouton Supprimer ce voyage. -->
                             <lightning-button
                                 class="slds-m-left_small"
                                 variant="destructive"
@@ -260,7 +254,7 @@
 
         </template>
 
-
+        <!-- Message affiche quand il n y a aucun voyage. -->
         <template if:false={trips}>
 
             <p>
@@ -271,38 +265,34 @@
 
     </div>
 
-
-    <!-- =====================================================
-         ACCOUNTS
-         ===================================================== -->
-
     <div class="slds-border_top slds-m-horizontal_medium"></div>
-
 
     <div class="slds-p-around_medium">
 
+        <!-- SECTION COMPTES : formulaire pour creer ou modifier un compte, puis liste des comptes. -->
         <h2 class="slds-text-heading_large slds-m-bottom_medium">
             Comptes clients
         </h2>
 
-
         <h3 class="slds-text-heading_medium slds-m-bottom_medium">
 
+            <!-- Titre du formulaire en mode modification (compte). -->
             <template if:true={isAccountEditMode}>
                 Modifier un compte
             </template>
 
+            <!-- Titre du formulaire en mode creation (compte). -->
             <template if:false={isAccountEditMode}>
                 Créer un compte
             </template>
 
         </h3>
 
-
         <div class="slds-grid slds-wrap slds-gutters">
 
             <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
 
+                <!-- Champ de saisie : Nom (appelle handleAccountNameChange a chaque changement). -->
                 <lightning-input
                     label="Nom"
                     value={accountName}
@@ -312,9 +302,9 @@
 
             </div>
 
-
             <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
 
+                <!-- Champ de saisie : Telephone (appelle handleAccountPhoneChange a chaque changement). -->
                 <lightning-input
                     type="tel"
                     label="Téléphone"
@@ -324,9 +314,9 @@
 
             </div>
 
-
             <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
 
+                <!-- Champ de saisie : Site web (appelle handleAccountWebsiteChange a chaque changement). -->
                 <lightning-input
                     type="url"
                     label="Site web"
@@ -336,9 +326,9 @@
 
             </div>
 
-
             <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
 
+                <!-- Champ de saisie : Secteur (appelle handleAccountIndustryChange a chaque changement). -->
                 <lightning-input
                     label="Secteur"
                     value={accountIndustry}
@@ -349,11 +339,12 @@
 
         </div>
 
-
         <div class="slds-m-top_medium">
 
+            <!-- Bouton Creer : affiche en mode creation (compte). -->
             <template if:false={isAccountEditMode}>
 
+                <!-- Bouton Creer le compte. -->
                 <lightning-button
                     variant="brand"
                     label="Créer"
@@ -363,9 +354,10 @@
 
             </template>
 
-
+            <!-- Boutons de modification (Enregistrer / Annuler) : affiches en mode modification (compte). -->
             <template if:true={isAccountEditMode}>
 
+                <!-- Bouton Enregistrer les modifications du compte. -->
                 <lightning-button
                     variant="brand"
                     label="Enregistrer"
@@ -373,7 +365,7 @@
                     onclick={handleAccountUpdate}>
                 </lightning-button>
 
-
+                <!-- Bouton Annuler la modification du compte. -->
                 <lightning-button
                     class="slds-m-left_small"
                     label="Annuler"
@@ -386,9 +378,7 @@
 
     </div>
 
-
     <div class="slds-border_top slds-m-horizontal_medium"></div>
-
 
     <div class="slds-p-around_medium">
 
@@ -396,7 +386,7 @@
             Comptes existants
         </h3>
 
-
+        <!-- Liste des comptes : affichee s il y a des comptes. -->
         <template if:true={accounts}>
 
             <template
@@ -426,9 +416,9 @@
                         {account.Industry}
                     </p>
 
-
                     <div class="slds-m-top_small">
 
+                        <!-- Bouton Modifier ce compte. -->
                         <lightning-button
                             label="Modifier"
                             icon-name="utility:edit"
@@ -436,7 +426,7 @@
                             onclick={handleSelectAccount}>
                         </lightning-button>
 
-
+                        <!-- Bouton Supprimer ce compte. -->
                         <lightning-button
                             class="slds-m-left_small"
                             variant="destructive"
@@ -456,38 +446,34 @@
 
     </div>
 
-
-    <!-- =====================================================
-         OPPORTUNITIES
-         ===================================================== -->
-
     <div class="slds-border_top slds-m-horizontal_medium"></div>
-
 
     <div class="slds-p-around_medium">
 
+        <!-- SECTION OPPORTUNITES : formulaire pour creer ou modifier une opportunite, puis liste. -->
         <h2 class="slds-text-heading_large slds-m-bottom_medium">
             Opportunités
         </h2>
 
-
         <h3 class="slds-text-heading_medium slds-m-bottom_medium">
 
+            <!-- Titre du formulaire en mode modification (opportunite). -->
             <template if:true={isOpportunityEditMode}>
                 Modifier une opportunité
             </template>
 
+            <!-- Titre du formulaire en mode creation (opportunite). -->
             <template if:false={isOpportunityEditMode}>
                 Créer une opportunité
             </template>
 
         </h3>
 
-
         <div class="slds-grid slds-wrap slds-gutters">
 
             <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
 
+                <!-- Champ de saisie : Nom (appelle handleOpportunityNameChange a chaque changement). -->
                 <lightning-input
                     label="Nom"
                     value={opportunityName}
@@ -497,9 +483,9 @@
 
             </div>
 
-
             <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
 
+                <!-- Champ de saisie : Compte (appelle handleOpportunityAccountChange a chaque changement). -->
                 <lightning-combobox
                     label="Compte"
                     value={opportunityAccountId}
@@ -510,9 +496,9 @@
 
             </div>
 
-
             <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
 
+                <!-- Champ de saisie : Etape (appelle handleOpportunityStageChange a chaque changement). -->
                 <lightning-combobox
                     label="Étape"
                     value={opportunityStage}
@@ -523,9 +509,9 @@
 
             </div>
 
-
             <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
 
+                <!-- Champ de saisie : Date de cloture (appelle handleOpportunityCloseDateChange a chaque changement). -->
                 <lightning-input
                     type="date"
                     label="Date de clôture"
@@ -536,9 +522,9 @@
 
             </div>
 
-
             <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
 
+                <!-- Champ de saisie : Montant (appelle handleOpportunityAmountChange a chaque changement). -->
                 <lightning-input
                     type="number"
                     label="Montant"
@@ -549,9 +535,9 @@
 
             </div>
 
-
             <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
 
+                <!-- Champ de saisie : Destination (appelle handleOpportunityDestinationChange a chaque changement). -->
                 <lightning-input
                     label="Destination"
                     value={opportunityDestination}
@@ -560,9 +546,9 @@
 
             </div>
 
-
             <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
 
+                <!-- Champ de saisie : Date de debut (appelle handleOpportunityStartDateChange a chaque changement). -->
                 <lightning-input
                     type="date"
                     label="Date de début"
@@ -572,9 +558,9 @@
 
             </div>
 
-
             <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
 
+                <!-- Champ de saisie : Date de fin (appelle handleOpportunityEndDateChange a chaque changement). -->
                 <lightning-input
                     type="date"
                     label="Date de fin"
@@ -584,9 +570,9 @@
 
             </div>
 
-
             <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
 
+                <!-- Champ de saisie : Nombre de participants (appelle handleOpportunityParticipantsChange a chaque changement). -->
                 <lightning-input
                     type="number"
                     label="Nombre de participants"
@@ -599,11 +585,12 @@
 
         </div>
 
-
         <div class="slds-m-top_medium">
 
+            <!-- Bouton Creer : affiche en mode creation (opportunite). -->
             <template if:false={isOpportunityEditMode}>
 
+                <!-- Bouton Creer l opportunite. -->
                 <lightning-button
                     variant="brand"
                     label="Créer"
@@ -613,9 +600,10 @@
 
             </template>
 
-
+            <!-- Boutons de modification (Enregistrer / Annuler) : affiches en mode modification (opportunite). -->
             <template if:true={isOpportunityEditMode}>
 
+                <!-- Bouton Enregistrer les modifications de l opportunite. -->
                 <lightning-button
                     variant="brand"
                     label="Enregistrer"
@@ -623,7 +611,7 @@
                     onclick={handleOpportunityUpdate}>
                 </lightning-button>
 
-
+                <!-- Bouton Annuler la modification de l opportunite. -->
                 <lightning-button
                     class="slds-m-left_small"
                     label="Annuler"
@@ -636,9 +624,7 @@
 
     </div>
 
-
     <div class="slds-border_top slds-m-horizontal_medium"></div>
-
 
     <div class="slds-p-around_medium">
 
@@ -646,7 +632,7 @@
             Opportunités existantes
         </h3>
 
-
+        <!-- Liste des opportunites : affichee s il y en a. -->
         <template if:true={opportunities}>
 
             <template
@@ -696,9 +682,9 @@
                         {opportunity.Number_of_Participants__c}
                     </p>
 
-
                     <div class="slds-m-top_small">
 
+                        <!-- Bouton Modifier cette opportunite. -->
                         <lightning-button
                             label="Modifier"
                             icon-name="utility:edit"
@@ -706,7 +692,7 @@
                             onclick={handleSelectOpportunity}>
                         </lightning-button>
 
-
+                        <!-- Bouton Supprimer cette opportunite. -->
                         <lightning-button
                             class="slds-m-left_small"
                             variant="destructive"
@@ -726,38 +712,34 @@
 
     </div>
 
-
-    <!-- =====================================================
-         CONTRACTS
-         ===================================================== -->
-
     <div class="slds-border_top slds-m-horizontal_medium"></div>
-
 
     <div class="slds-p-around_medium">
 
+        <!-- SECTION CONTRATS : formulaire pour creer ou modifier un contrat, puis liste des contrats. -->
         <h2 class="slds-text-heading_large slds-m-bottom_medium">
             Contrats
         </h2>
 
-
         <h3 class="slds-text-heading_medium slds-m-bottom_medium">
 
+            <!-- Titre du formulaire en mode modification (contrat). -->
             <template if:true={isContractEditMode}>
                 Modifier un contrat
             </template>
 
+            <!-- Titre du formulaire en mode creation (contrat). -->
             <template if:false={isContractEditMode}>
                 Créer un contrat
             </template>
 
         </h3>
 
-
         <div class="slds-grid slds-wrap slds-gutters">
 
             <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
 
+                <!-- Champ de saisie : Compte (appelle handleContractAccountChange a chaque changement). -->
                 <lightning-combobox
                     label="Compte"
                     value={contractAccountId}
@@ -768,9 +750,9 @@
 
             </div>
 
-
             <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
 
+                <!-- Champ de saisie : Date de debut (appelle handleContractStartDateChange a chaque changement). -->
                 <lightning-input
                     type="date"
                     label="Date de début"
@@ -781,9 +763,9 @@
 
             </div>
 
-
             <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
 
+                <!-- Champ de saisie : Duree du contrat (mois) (appelle handleContractTermChange a chaque changement). -->
                 <lightning-input
                     type="number"
                     label="Durée du contrat (mois)"
@@ -796,9 +778,9 @@
 
             </div>
 
-
             <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
 
+                <!-- Champ de saisie : Statut (appelle handleContractStatusChange a chaque changement). -->
                 <lightning-combobox
                     label="Statut"
                     value={contractStatus}
@@ -809,9 +791,9 @@
 
             </div>
 
-
             <div class="slds-col slds-size_1-of-1">
 
+                <!-- Champ de saisie : Description (appelle handleContractDescriptionChange a chaque changement). -->
                 <lightning-textarea
                     label="Description"
                     value={contractDescription}
@@ -822,11 +804,12 @@
 
         </div>
 
-
         <div class="slds-m-top_medium">
 
+            <!-- Bouton Creer : affiche en mode creation (contrat). -->
             <template if:false={isContractEditMode}>
 
+                <!-- Bouton Creer le contrat. -->
                 <lightning-button
                     variant="brand"
                     label="Créer"
@@ -836,9 +819,10 @@
 
             </template>
 
-
+            <!-- Boutons de modification (Enregistrer / Annuler) : affiches en mode modification (contrat). -->
             <template if:true={isContractEditMode}>
 
+                <!-- Bouton Enregistrer les modifications du contrat. -->
                 <lightning-button
                     variant="brand"
                     label="Enregistrer"
@@ -846,7 +830,7 @@
                     onclick={handleContractUpdate}>
                 </lightning-button>
 
-
+                <!-- Bouton Annuler la modification du contrat. -->
                 <lightning-button
                     class="slds-m-left_small"
                     label="Annuler"
@@ -859,9 +843,7 @@
 
     </div>
 
-
     <div class="slds-border_top slds-m-horizontal_medium"></div>
-
 
     <div class="slds-p-around_medium">
 
@@ -869,7 +851,7 @@
             Contrats existants
         </h3>
 
-
+        <!-- Liste des contrats : affichee s il y en a. -->
         <template if:true={contracts}>
 
             <template
@@ -918,9 +900,9 @@
 
                     </template>
 
-
                     <div class="slds-m-top_small">
 
+                        <!-- Bouton Modifier ce contrat. -->
                         <lightning-button
                             label="Modifier"
                             icon-name="utility:edit"
@@ -928,7 +910,7 @@
                             onclick={handleSelectContract}>
                         </lightning-button>
 
-
+                        <!-- Bouton Supprimer ce contrat. -->
                         <lightning-button
                             class="slds-m-left_small"
                             variant="destructive"
@@ -946,7 +928,7 @@
 
         </template>
 
-
+        <!-- Message affiche quand il n y a aucun contrat. -->
         <template if:false={contracts}>
 
             <p>

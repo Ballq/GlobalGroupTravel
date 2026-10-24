@@ -1,60 +1,50 @@
+// On importe LightningElement (la base d un composant LWC) et track (l ecran se met a jour quand ces variables changent).
 import { LightningElement, track } from 'lwc';
 
-// =========================
-// TRIPS
-// =========================
+// Imports des methodes Apex des voyages : lire, creer, modifier, supprimer.
 import getTrips from '@salesforce/apex/TripCrudController.getTrips';
 import createTrip from '@salesforce/apex/TripCrudController.createTrip';
 import updateTrip from '@salesforce/apex/TripCrudController.updateTrip';
 import deleteTrip from '@salesforce/apex/TripCrudController.deleteTrip';
 
-// =========================
-// ACCOUNTS
-// =========================
+// Imports des methodes Apex des comptes.
 import getAccounts from '@salesforce/apex/AccountCrudController.getAccounts';
 import createAccount from '@salesforce/apex/AccountCrudController.createAccount';
 import updateAccount from '@salesforce/apex/AccountCrudController.updateAccount';
 import deleteAccount from '@salesforce/apex/AccountCrudController.deleteAccount';
 
-// =========================
-// OPPORTUNITIES
-// =========================
+// Imports des methodes Apex des opportunites.
 import getOpportunities from '@salesforce/apex/OpportunityCrudController.getOpportunities';
 import createOpportunity from '@salesforce/apex/OpportunityCrudController.createOpportunity';
 import updateOpportunity from '@salesforce/apex/OpportunityCrudController.updateOpportunity';
 import deleteOpportunity from '@salesforce/apex/OpportunityCrudController.deleteOpportunity';
 
-// =========================
-// CONTRACTS
-// =========================
+// Imports des methodes Apex des contrats.
 import getContracts from '@salesforce/apex/ContractCrudController.getContracts';
 import createContract from '@salesforce/apex/ContractCrudController.createContract';
 import updateContract from '@salesforce/apex/ContractCrudController.updateContract';
 import deleteContract from '@salesforce/apex/ContractCrudController.deleteContract';
 
-
+// Composant principal : il affiche et gere les voyages, comptes, opportunites et contrats (formulaires + listes).
 export default class TripManager extends LightningElement {
 
-    // ============================================================
-    // GENERAL
-    // ============================================================
-
+    // Listes affichees a l ecran (elles viennent de Salesforce).
     @track trips = [];
     @track accounts = [];
     @track opportunities = [];
     @track contracts = [];
 
+    // Messages d erreur affiches en haut de l ecran.
     @track error = '';
     @track errorMessage = '';
 
-    // ============================================================
-    // TRIP STATE
-    // ============================================================
-
+    // --- Voyages --- isEditMode = true quand on modifie un voyage existant.
     @track isEditMode = false;
 
+    // Id du voyage en cours de modification.
     @track editingTripId = null;
 
+    // Valeurs saisies dans le formulaire des voyages.
     @track destination = '';
     @track startDate = null;
     @track endDate = null;
@@ -62,10 +52,7 @@ export default class TripManager extends LightningElement {
     @track budget = null;
     @track cost = null;
 
-    // ============================================================
-    // ACCOUNT STATE
-    // ============================================================
-
+    // --- Comptes --- mode modification, Id du compte modifie et valeurs du formulaire.
     @track isAccountEditMode = false;
 
     @track editingAccountId = null;
@@ -75,10 +62,7 @@ export default class TripManager extends LightningElement {
     @track accountWebsite = '';
     @track accountIndustry = '';
 
-    // ============================================================
-    // OPPORTUNITY STATE
-    // ============================================================
-
+    // --- Opportunites --- mode modification, Id de l opportunite modifiee et valeurs du formulaire.
     @track isOpportunityEditMode = false;
 
     @track editingOpportunityId = null;
@@ -93,10 +77,7 @@ export default class TripManager extends LightningElement {
     @track opportunityEndDate = null;
     @track opportunityParticipants = null;
 
-    // ============================================================
-    // CONTRACT STATE
-    // ============================================================
-
+    // --- Contrats --- mode modification, Id du contrat modifie et valeurs du formulaire.
     @track isContractEditMode = false;
 
     @track editingContractId = null;
@@ -107,10 +88,7 @@ export default class TripManager extends LightningElement {
     @track contractStatus = '';
     @track contractDescription = '';
 
-    // ============================================================
-    // OPPORTUNITY OPTIONS
-    // ============================================================
-
+    // Choix de la liste deroulante Etape d une opportunite.
     opportunityStageOptions = [
         {
             label: 'Prospecting',
@@ -154,10 +132,7 @@ export default class TripManager extends LightningElement {
         }
     ];
 
-    // ============================================================
-    // CONTRACT STATUS OPTIONS
-    // ============================================================
-
+    // Choix de la liste deroulante Statut d un contrat.
     contractStatusOptions = [
         {
             label: 'Draft',
@@ -173,19 +148,16 @@ export default class TripManager extends LightningElement {
         }
     ];
 
-    // ============================================================
-    // LIFECYCLE
-    // ============================================================
-
+    // METHODE connectedCallback : se lance automatiquement quand le composant s affiche a l ecran.
+    // Role : charger toutes les donnees (voyages, comptes, opportunites, contrats).
     connectedCallback() {
         this.loadAllData();
     }
 
-    // ============================================================
-    // LOAD ALL DATA
-    // ============================================================
-
+    // METHODE loadAllData : recharge les 4 listes en meme temps (Promise.all = on attend que tout soit fini).
+    // Elle est utilisee au demarrage et par le bouton Actualiser.
     async loadAllData() {
+        // On efface l ancien message d erreur avant de commencer.
         this.clearError();
 
         try {
@@ -195,20 +167,20 @@ export default class TripManager extends LightningElement {
                 this.loadOpportunities(),
                 this.loadContracts()
             ]);
+        // Si Apex renvoie une erreur, on l affiche a l ecran.
         } catch (error) {
             this.setError(error);
         }
     }
 
-    // ============================================================
-    // ERROR MANAGEMENT
-    // ============================================================
-
+    // METHODE clearError : efface le message d erreur affiche a l ecran.
     clearError() {
         this.error = '';
         this.errorMessage = '';
     }
 
+    // METHODE setError : affiche une erreur a l ecran.
+    // Role : on extrait un message lisible avec getErrorMessage et on l affiche (et on l ecrit aussi dans la console du navigateur).
     setError(error) {
         const message = this.getErrorMessage(error);
 
@@ -219,15 +191,14 @@ export default class TripManager extends LightningElement {
         console.error('Message extrait :', message);
     }
 
+    // METHODE getErrorMessage : transforme une erreur Salesforce en texte simple.
+    // Salesforce peut renvoyer l erreur sous plusieurs formes (body.message, liste, pageErrors, fieldErrors...).
+    // On teste chaque forme l une apres l autre et on renvoie le premier message trouve.
     getErrorMessage(error) {
 
         if (!error) {
             return 'Une erreur inconnue est survenue.';
         }
-
-        // --------------------------------------------
-        // Cas classique AuraHandledException
-        // --------------------------------------------
 
         if (
             error.body &&
@@ -236,10 +207,6 @@ export default class TripManager extends LightningElement {
         ) {
             return error.body.message;
         }
-
-        // --------------------------------------------
-        // Tableau d'erreurs
-        // --------------------------------------------
 
         if (
             error.body &&
@@ -254,10 +221,6 @@ export default class TripManager extends LightningElement {
                 return messages.join(' | ');
             }
         }
-
-        // --------------------------------------------
-        // Erreurs Apex / UI API
-        // --------------------------------------------
 
         if (
             error.body &&
@@ -274,10 +237,6 @@ export default class TripManager extends LightningElement {
             }
         }
 
-        // --------------------------------------------
-        // Page Errors
-        // --------------------------------------------
-
         if (
             error.body &&
             error.body.output &&
@@ -292,10 +251,6 @@ export default class TripManager extends LightningElement {
                 return messages.join(' | ');
             }
         }
-
-        // --------------------------------------------
-        // Field Errors
-        // --------------------------------------------
 
         if (
             error.body &&
@@ -330,20 +285,12 @@ export default class TripManager extends LightningElement {
             }
         }
 
-        // --------------------------------------------
-        // Error.message
-        // --------------------------------------------
-
         if (
             typeof error.message === 'string' &&
             error.message.trim() !== ''
         ) {
             return error.message;
         }
-
-        // --------------------------------------------
-        // Tentative JSON
-        // --------------------------------------------
 
         try {
 
@@ -367,16 +314,16 @@ export default class TripManager extends LightningElement {
         return 'Une erreur est survenue.';
     }
 
-    // ============================================================
-    // TRIPS - LOAD
-    // ============================================================
-
+    // METHODE loadTrips : demande a Salesforce (Apex) la liste des voyages et la garde dans la variable de la classe.
+    // Si Apex renvoie une erreur, on l affiche puis on la relance (throw) pour que l appelant le sache.
     async loadTrips() {
 
         try {
 
+            // On recupere la liste depuis Salesforce (appel Apex).
             this.trips = await getTrips();
 
+        // Si Apex renvoie une erreur, on l affiche a l ecran.
         } catch (error) {
 
             this.setError(error);
@@ -385,22 +332,26 @@ export default class TripManager extends LightningElement {
         }
     }
 
-    // ============================================================
-    // TRIPS - INPUTS
-    // ============================================================
-
+    // METHODE handleDestinationChange : appelee quand l utilisateur change la destination dans le formulaire.
+    // On garde la nouvelle valeur saisie dans la variable correspondante.
     handleDestinationChange(event) {
         this.destination = event.target.value;
     }
 
+    // METHODE handleStartDateChange : appelee quand l utilisateur change la date de debut dans le formulaire.
+    // On garde la nouvelle valeur saisie dans la variable correspondante.
     handleStartDateChange(event) {
         this.startDate = event.target.value;
     }
 
+    // METHODE handleEndDateChange : appelee quand l utilisateur change la date de fin dans le formulaire.
+    // On garde la nouvelle valeur saisie dans la variable correspondante.
     handleEndDateChange(event) {
         this.endDate = event.target.value;
     }
 
+    // METHODE handleParticipantsChange : appelee quand l utilisateur change le nombre de participants dans le formulaire.
+    // Pour un nombre : champ vide = null, sinon on convertit le texte avec Number().
     handleParticipantsChange(event) {
 
         const value = event.target.value;
@@ -413,6 +364,8 @@ export default class TripManager extends LightningElement {
         this.participants = Number(value);
     }
 
+    // METHODE handleBudgetChange : appelee quand l utilisateur change le budget dans le formulaire.
+    // Pour un nombre : champ vide = null, sinon on convertit le texte avec Number().
     handleBudgetChange(event) {
 
         const value = event.target.value;
@@ -425,6 +378,8 @@ export default class TripManager extends LightningElement {
         this.budget = Number(value);
     }
 
+    // METHODE handleCostChange : appelee quand l utilisateur change le cout dans le formulaire.
+    // Pour un nombre : champ vide = null, sinon on convertit le texte avec Number().
     handleCostChange(event) {
 
         const value = event.target.value;
@@ -437,16 +392,16 @@ export default class TripManager extends LightningElement {
         this.cost = Number(value);
     }
 
-    // ============================================================
-    // TRIPS - CREATE
-    // ============================================================
-
+    // METHODE handleCreate : appelee quand on clique sur le bouton pour creer un voyage.
+    // Role : envoyer les valeurs du formulaire a Apex, vider le formulaire, puis recharger la liste.
     async handleCreate() {
 
+        // On efface l ancien message d erreur avant de commencer.
         this.clearError();
 
         try {
 
+            // Appel a la methode Apex (cote serveur) : l enregistrement se fait dans Salesforce.
             await createTrip({
                 destination: this.destination,
                 startDate: this.startDate,
@@ -456,10 +411,13 @@ export default class TripManager extends LightningElement {
                 totalCost: this.cost
             });
 
+            // On vide le formulaire.
             this.resetTripForm();
 
+            // On recharge la liste pour voir les changements a l ecran.
             await this.loadTrips();
 
+        // Si Apex renvoie une erreur, on l affiche a l ecran.
         } catch (error) {
 
             this.setError(error);
@@ -467,12 +425,11 @@ export default class TripManager extends LightningElement {
         }
     }
 
-    // ============================================================
-    // TRIPS - SELECT
-    // ============================================================
-
+    // METHODE handleSelectTrip : appelee quand on clique sur Modifier pour un voyage de la liste.
+    // Role : retrouver le voyage grace a son Id, passer en mode modification et remplir le formulaire avec ses valeurs.
     handleSelectTrip(event) {
 
+        // On lit l Id de la ligne cliquee (il est stocke dans data-id dans le HTML).
         const tripId = event.currentTarget.dataset.id;
 
         const trip = this.trips.find(
@@ -507,16 +464,16 @@ export default class TripManager extends LightningElement {
                 : Number(trip.Total_Cost__c);
     }
 
-    // ============================================================
-    // TRIPS - UPDATE
-    // ============================================================
-
+    // METHODE handleUpdate : appelee quand on enregistre la modification d un voyage.
+    // Role : envoyer les nouvelles valeurs a Apex, quitter le mode modification, puis recharger la liste.
     async handleUpdate() {
 
+        // On efface l ancien message d erreur avant de commencer.
         this.clearError();
 
         try {
 
+            // Appel a la methode Apex (cote serveur) : l enregistrement se fait dans Salesforce.
             await updateTrip({
                 trip: {
                     Id: this.editingTripId,
@@ -529,10 +486,13 @@ export default class TripManager extends LightningElement {
                 }
             });
 
+            // On vide le formulaire.
             this.resetTripForm();
 
+            // On recharge la liste pour voir les changements a l ecran.
             await this.loadTrips();
 
+        // Si Apex renvoie une erreur, on l affiche a l ecran.
         } catch (error) {
 
             this.setError(error);
@@ -540,14 +500,14 @@ export default class TripManager extends LightningElement {
         }
     }
 
-    // ============================================================
-    // TRIPS - DELETE
-    // ============================================================
-
+    // METHODE handleDelete : appelee quand on clique sur Supprimer pour un voyage.
+    // Role : lire l Id de la ligne, demander a Apex de supprimer, puis recharger la liste.
     async handleDelete(event) {
 
+        // On efface l ancien message d erreur avant de commencer.
         this.clearError();
 
+        // On lit l Id de la ligne cliquee (il est stocke dans data-id dans le HTML).
         const tripId = event.currentTarget.dataset.id;
 
         if (!tripId) {
@@ -556,12 +516,15 @@ export default class TripManager extends LightningElement {
 
         try {
 
+            // Appel a la methode Apex qui supprime l enregistrement dans Salesforce.
             await deleteTrip({
                 tripId: tripId
             });
 
+            // On recharge la liste pour voir les changements a l ecran.
             await this.loadTrips();
 
+        // Si Apex renvoie une erreur, on l affiche a l ecran.
         } catch (error) {
 
             this.setError(error);
@@ -569,18 +532,19 @@ export default class TripManager extends LightningElement {
         }
     }
 
-    // ============================================================
-    // TRIPS - CANCEL EDIT
-    // ============================================================
-
+    // METHODE handleCancelEdit : appelee quand on clique sur Annuler pendant une modification.
+    // Role : quitter le mode modification et vider le formulaire.
     handleCancelEdit() {
+        // On vide le formulaire.
         this.resetTripForm();
     }
 
+    // METHODE resetTripForm : remet le formulaire du voyage a zero (mode creation, champs vides).
     resetTripForm() {
 
         this.isEditMode = false;
 
+        // On oublie l Id de l enregistrement qui etait modifie.
         this.editingTripId = null;
 
         this.destination = '';
@@ -591,18 +555,19 @@ export default class TripManager extends LightningElement {
         this.cost = null;
     }
 
-    // ============================================================
-    // TRIPS - REFRESH
-    // ============================================================
-
+    // METHODE handleRefresh : appelee quand on clique sur le bouton Actualiser.
+    // Role : recharger toutes les donnees depuis Salesforce.
     async handleRefresh() {
 
+        // On efface l ancien message d erreur avant de commencer.
         this.clearError();
 
         try {
 
+            // On recharge la liste pour voir les changements a l ecran.
             await this.loadAllData();
 
+        // Si Apex renvoie une erreur, on l affiche a l ecran.
         } catch (error) {
 
             this.setError(error);
@@ -610,16 +575,16 @@ export default class TripManager extends LightningElement {
         }
     }
 
-    // ============================================================
-    // ACCOUNTS - LOAD
-    // ============================================================
-
+    // METHODE loadAccounts : demande a Salesforce (Apex) la liste des comptes et la garde dans la variable de la classe.
+    // Si Apex renvoie une erreur, on l affiche puis on la relance (throw) pour que l appelant le sache.
     async loadAccounts() {
 
         try {
 
+            // On recupere la liste depuis Salesforce (appel Apex).
             this.accounts = await getAccounts();
 
+        // Si Apex renvoie une erreur, on l affiche a l ecran.
         } catch (error) {
 
             this.setError(error);
@@ -628,36 +593,40 @@ export default class TripManager extends LightningElement {
         }
     }
 
-    // ============================================================
-    // ACCOUNTS - INPUTS
-    // ============================================================
-
+    // METHODE handleAccountNameChange : appelee quand l utilisateur change le nom du compte dans le formulaire.
+    // On garde la nouvelle valeur saisie dans la variable correspondante.
     handleAccountNameChange(event) {
         this.accountName = event.target.value;
     }
 
+    // METHODE handleAccountPhoneChange : appelee quand l utilisateur change le telephone du compte dans le formulaire.
+    // On garde la nouvelle valeur saisie dans la variable correspondante.
     handleAccountPhoneChange(event) {
         this.accountPhone = event.target.value;
     }
 
+    // METHODE handleAccountWebsiteChange : appelee quand l utilisateur change le site web du compte dans le formulaire.
+    // On garde la nouvelle valeur saisie dans la variable correspondante.
     handleAccountWebsiteChange(event) {
         this.accountWebsite = event.target.value;
     }
 
+    // METHODE handleAccountIndustryChange : appelee quand l utilisateur change le secteur du compte dans le formulaire.
+    // On garde la nouvelle valeur saisie dans la variable correspondante.
     handleAccountIndustryChange(event) {
         this.accountIndustry = event.target.value;
     }
 
-    // ============================================================
-    // ACCOUNTS - CREATE
-    // ============================================================
-
+    // METHODE handleAccountCreate : appelee quand on clique sur le bouton pour creer un compte.
+    // Role : envoyer les valeurs du formulaire a Apex, vider le formulaire, puis recharger la liste.
     async handleAccountCreate() {
 
+        // On efface l ancien message d erreur avant de commencer.
         this.clearError();
 
         try {
 
+            // Appel a la methode Apex (cote serveur) : l enregistrement se fait dans Salesforce.
             await createAccount({
                 name: this.accountName,
                 phone: this.accountPhone,
@@ -665,10 +634,13 @@ export default class TripManager extends LightningElement {
                 industry: this.accountIndustry
             });
 
+            // On vide le formulaire.
             this.resetAccountForm();
 
+            // On recharge la liste pour voir les changements a l ecran.
             await this.loadAccounts();
 
+        // Si Apex renvoie une erreur, on l affiche a l ecran.
         } catch (error) {
 
             this.setError(error);
@@ -676,12 +648,11 @@ export default class TripManager extends LightningElement {
         }
     }
 
-    // ============================================================
-    // ACCOUNTS - SELECT
-    // ============================================================
-
+    // METHODE handleSelectAccount : appelee quand on clique sur Modifier pour un compte de la liste.
+    // Role : retrouver le compte grace a son Id, passer en mode modification et remplir le formulaire avec ses valeurs.
     handleSelectAccount(event) {
 
+        // On lit l Id de la ligne cliquee (il est stocke dans data-id dans le HTML).
         const accountId = event.currentTarget.dataset.id;
 
         const account = this.accounts.find(
@@ -692,6 +663,7 @@ export default class TripManager extends LightningElement {
             return;
         }
 
+        // On passe en mode modification.
         this.isAccountEditMode = true;
 
         this.editingAccountId = account.Id;
@@ -702,16 +674,16 @@ export default class TripManager extends LightningElement {
         this.accountIndustry = account.Industry || '';
     }
 
-    // ============================================================
-    // ACCOUNTS - UPDATE
-    // ============================================================
-
+    // METHODE handleAccountUpdate : appelee quand on enregistre la modification d un compte.
+    // Role : envoyer les nouvelles valeurs a Apex, quitter le mode modification, puis recharger la liste.
     async handleAccountUpdate() {
 
+        // On efface l ancien message d erreur avant de commencer.
         this.clearError();
 
         try {
 
+            // Appel a la methode Apex (cote serveur) : l enregistrement se fait dans Salesforce.
             await updateAccount({
                 account: {
                     Id: this.editingAccountId,
@@ -722,10 +694,13 @@ export default class TripManager extends LightningElement {
                 }
             });
 
+            // On vide le formulaire.
             this.resetAccountForm();
 
+            // On recharge la liste pour voir les changements a l ecran.
             await this.loadAccounts();
 
+        // Si Apex renvoie une erreur, on l affiche a l ecran.
         } catch (error) {
 
             this.setError(error);
@@ -733,14 +708,14 @@ export default class TripManager extends LightningElement {
         }
     }
 
-    // ============================================================
-    // ACCOUNTS - DELETE
-    // ============================================================
-
+    // METHODE handleAccountDelete : appelee quand on clique sur Supprimer pour un compte.
+    // Role : lire l Id de la ligne, demander a Apex de supprimer, puis recharger la liste.
     async handleAccountDelete(event) {
 
+        // On efface l ancien message d erreur avant de commencer.
         this.clearError();
 
+        // On lit l Id de la ligne cliquee (il est stocke dans data-id dans le HTML).
         const accountId = event.currentTarget.dataset.id;
 
         if (!accountId) {
@@ -749,12 +724,15 @@ export default class TripManager extends LightningElement {
 
         try {
 
+            // Appel a la methode Apex qui supprime l enregistrement dans Salesforce.
             await deleteAccount({
                 accountId: accountId
             });
 
+            // On recharge la liste pour voir les changements a l ecran.
             await this.loadAccounts();
 
+        // Si Apex renvoie une erreur, on l affiche a l ecran.
         } catch (error) {
 
             this.setError(error);
@@ -762,18 +740,20 @@ export default class TripManager extends LightningElement {
         }
     }
 
-    // ============================================================
-    // ACCOUNTS - CANCEL
-    // ============================================================
-
+    // METHODE handleCancelAccountEdit : appelee quand on clique sur Annuler pendant une modification.
+    // Role : quitter le mode modification et vider le formulaire.
     handleCancelAccountEdit() {
+        // On vide le formulaire.
         this.resetAccountForm();
     }
 
+    // METHODE resetAccountForm : remet le formulaire du compte a zero (mode creation, champs vides).
     resetAccountForm() {
 
+        // On quitte le mode modification.
         this.isAccountEditMode = false;
 
+        // On oublie l Id de l enregistrement qui etait modifie.
         this.editingAccountId = null;
 
         this.accountName = '';
@@ -782,16 +762,16 @@ export default class TripManager extends LightningElement {
         this.accountIndustry = '';
     }
 
-    // ============================================================
-    // OPPORTUNITIES - LOAD
-    // ============================================================
-
+    // METHODE loadOpportunities : demande a Salesforce (Apex) la liste des opportunites et la garde dans la variable de la classe.
+    // Si Apex renvoie une erreur, on l affiche puis on la relance (throw) pour que l appelant le sache.
     async loadOpportunities() {
 
         try {
 
+            // On recupere la liste depuis Salesforce (appel Apex).
             this.opportunities = await getOpportunities();
 
+        // Si Apex renvoie une erreur, on l affiche a l ecran.
         } catch (error) {
 
             this.setError(error);
@@ -800,26 +780,32 @@ export default class TripManager extends LightningElement {
         }
     }
 
-    // ============================================================
-    // OPPORTUNITIES - INPUTS
-    // ============================================================
-
+    // METHODE handleOpportunityNameChange : appelee quand l utilisateur change le nom de l opportunite dans le formulaire.
+    // On garde la nouvelle valeur saisie dans la variable correspondante.
     handleOpportunityNameChange(event) {
         this.opportunityName = event.target.value;
     }
 
+    // METHODE handleOpportunityAccountChange : appelee quand l utilisateur change le compte de l opportunite dans le formulaire.
+    // On garde la nouvelle valeur saisie dans la variable correspondante.
     handleOpportunityAccountChange(event) {
         this.opportunityAccountId = event.detail.value;
     }
 
+    // METHODE handleOpportunityStageChange : appelee quand l utilisateur change l etape de l opportunite dans le formulaire.
+    // On garde la nouvelle valeur saisie dans la variable correspondante.
     handleOpportunityStageChange(event) {
         this.opportunityStage = event.detail.value;
     }
 
+    // METHODE handleOpportunityCloseDateChange : appelee quand l utilisateur change la date de cloture dans le formulaire.
+    // On garde la nouvelle valeur saisie dans la variable correspondante.
     handleOpportunityCloseDateChange(event) {
         this.opportunityCloseDate = event.target.value;
     }
 
+    // METHODE handleOpportunityAmountChange : appelee quand l utilisateur change le montant dans le formulaire.
+    // Pour un nombre : champ vide = null, sinon on convertit le texte avec Number().
     handleOpportunityAmountChange(event) {
 
         const value = event.target.value;
@@ -832,18 +818,26 @@ export default class TripManager extends LightningElement {
         this.opportunityAmount = Number(value);
     }
 
+    // METHODE handleOpportunityDestinationChange : appelee quand l utilisateur change la destination dans le formulaire.
+    // On garde la nouvelle valeur saisie dans la variable correspondante.
     handleOpportunityDestinationChange(event) {
         this.opportunityDestination = event.target.value;
     }
 
+    // METHODE handleOpportunityStartDateChange : appelee quand l utilisateur change la date de debut du voyage dans le formulaire.
+    // On garde la nouvelle valeur saisie dans la variable correspondante.
     handleOpportunityStartDateChange(event) {
         this.opportunityStartDate = event.target.value;
     }
 
+    // METHODE handleOpportunityEndDateChange : appelee quand l utilisateur change la date de fin du voyage dans le formulaire.
+    // On garde la nouvelle valeur saisie dans la variable correspondante.
     handleOpportunityEndDateChange(event) {
         this.opportunityEndDate = event.target.value;
     }
 
+    // METHODE handleOpportunityParticipantsChange : appelee quand l utilisateur change le nombre de participants dans le formulaire.
+    // Pour un nombre : champ vide = null, sinon on convertit le texte avec Number().
     handleOpportunityParticipantsChange(event) {
 
         const value = event.target.value;
@@ -856,16 +850,16 @@ export default class TripManager extends LightningElement {
         this.opportunityParticipants = Number(value);
     }
 
-    // ============================================================
-    // OPPORTUNITIES - CREATE
-    // ============================================================
-
+    // METHODE handleOpportunityCreate : appelee quand on clique sur le bouton pour creer un opportunite.
+    // Role : envoyer les valeurs du formulaire a Apex, vider le formulaire, puis recharger la liste.
     async handleOpportunityCreate() {
 
+        // On efface l ancien message d erreur avant de commencer.
         this.clearError();
 
         try {
 
+            // Appel a la methode Apex (cote serveur) : l enregistrement se fait dans Salesforce.
             await createOpportunity({
                 name: this.opportunityName,
                 accountId: this.opportunityAccountId,
@@ -878,10 +872,13 @@ export default class TripManager extends LightningElement {
                 numberOfParticipants: this.opportunityParticipants
             });
 
+            // On vide le formulaire.
             this.resetOpportunityForm();
 
+            // On recharge la liste pour voir les changements a l ecran.
             await this.loadOpportunities();
 
+        // Si Apex renvoie une erreur, on l affiche a l ecran.
         } catch (error) {
 
             this.setError(error);
@@ -889,10 +886,8 @@ export default class TripManager extends LightningElement {
         }
     }
 
-    // ============================================================
-    // OPPORTUNITIES - SELECT
-    // ============================================================
-
+    // METHODE handleSelectOpportunity : appelee quand on clique sur Modifier pour un opportunite de la liste.
+    // Role : retrouver le opportunite grace a son Id, passer en mode modification et remplir le formulaire avec ses valeurs.
     handleSelectOpportunity(event) {
 
         const opportunityId =
@@ -906,6 +901,7 @@ export default class TripManager extends LightningElement {
             return;
         }
 
+        // On passe en mode modification.
         this.isOpportunityEditMode = true;
 
         this.editingOpportunityId = opportunity.Id;
@@ -944,16 +940,16 @@ export default class TripManager extends LightningElement {
                 );
     }
 
-    // ============================================================
-    // OPPORTUNITIES - UPDATE
-    // ============================================================
-
+    // METHODE handleOpportunityUpdate : appelee quand on enregistre la modification d un opportunite.
+    // Role : envoyer les nouvelles valeurs a Apex, quitter le mode modification, puis recharger la liste.
     async handleOpportunityUpdate() {
 
+        // On efface l ancien message d erreur avant de commencer.
         this.clearError();
 
         try {
 
+            // Appel a la methode Apex (cote serveur) : l enregistrement se fait dans Salesforce.
             await updateOpportunity({
                 opportunity: {
                     Id: this.editingOpportunityId,
@@ -970,12 +966,15 @@ export default class TripManager extends LightningElement {
                 }
             });
 
+            // On vide le formulaire.
             this.resetOpportunityForm();
 
+            // On recharge la liste pour voir les changements a l ecran.
             await this.loadOpportunities();
 
             await this.loadTrips();
 
+        // Si Apex renvoie une erreur, on l affiche a l ecran.
         } catch (error) {
 
             this.setError(error);
@@ -983,12 +982,11 @@ export default class TripManager extends LightningElement {
         }
     }
 
-    // ============================================================
-    // OPPORTUNITIES - DELETE
-    // ============================================================
-
+    // METHODE handleOpportunityDelete : appelee quand on clique sur Supprimer pour un opportunite.
+    // Role : lire l Id de la ligne, demander a Apex de supprimer, puis recharger la liste.
     async handleOpportunityDelete(event) {
 
+        // On efface l ancien message d erreur avant de commencer.
         this.clearError();
 
         const opportunityId =
@@ -1000,12 +998,15 @@ export default class TripManager extends LightningElement {
 
         try {
 
+            // Appel a la methode Apex qui supprime l enregistrement dans Salesforce.
             await deleteOpportunity({
                 opportunityId: opportunityId
             });
 
+            // On recharge la liste pour voir les changements a l ecran.
             await this.loadOpportunities();
 
+        // Si Apex renvoie une erreur, on l affiche a l ecran.
         } catch (error) {
 
             this.setError(error);
@@ -1013,18 +1014,20 @@ export default class TripManager extends LightningElement {
         }
     }
 
-    // ============================================================
-    // OPPORTUNITIES - CANCEL
-    // ============================================================
-
+    // METHODE handleCancelOpportunityEdit : appelee quand on clique sur Annuler pendant une modification.
+    // Role : quitter le mode modification et vider le formulaire.
     handleCancelOpportunityEdit() {
+        // On vide le formulaire.
         this.resetOpportunityForm();
     }
 
+    // METHODE resetOpportunityForm : remet le formulaire du opportunite a zero (mode creation, champs vides).
     resetOpportunityForm() {
 
+        // On quitte le mode modification.
         this.isOpportunityEditMode = false;
 
+        // On oublie l Id de l enregistrement qui etait modifie.
         this.editingOpportunityId = null;
 
         this.opportunityName = '';
@@ -1038,16 +1041,16 @@ export default class TripManager extends LightningElement {
         this.opportunityParticipants = null;
     }
 
-    // ============================================================
-    // CONTRACTS - LOAD
-    // ============================================================
-
+    // METHODE loadContracts : demande a Salesforce (Apex) la liste des contrats et la garde dans la variable de la classe.
+    // Si Apex renvoie une erreur, on l affiche puis on la relance (throw) pour que l appelant le sache.
     async loadContracts() {
 
         try {
 
+            // On recupere la liste depuis Salesforce (appel Apex).
             this.contracts = await getContracts();
 
+        // Si Apex renvoie une erreur, on l affiche a l ecran.
         } catch (error) {
 
             this.setError(error);
@@ -1056,18 +1059,20 @@ export default class TripManager extends LightningElement {
         }
     }
 
-    // ============================================================
-    // CONTRACTS - INPUTS
-    // ============================================================
-
+    // METHODE handleContractAccountChange : appelee quand l utilisateur change le compte du contrat dans le formulaire.
+    // On garde la nouvelle valeur saisie dans la variable correspondante.
     handleContractAccountChange(event) {
         this.contractAccountId = event.detail.value;
     }
 
+    // METHODE handleContractStartDateChange : appelee quand l utilisateur change la date de debut du contrat dans le formulaire.
+    // On garde la nouvelle valeur saisie dans la variable correspondante.
     handleContractStartDateChange(event) {
         this.contractStartDate = event.target.value;
     }
 
+    // METHODE handleContractTermChange : appelee quand l utilisateur change la duree du contrat (en mois) dans le formulaire.
+    // Pour un nombre : champ vide = null, sinon on convertit le texte avec Number().
     handleContractTermChange(event) {
 
         const value = event.target.value;
@@ -1085,20 +1090,23 @@ export default class TripManager extends LightningElement {
         );
     }
 
+    // METHODE handleContractStatusChange : appelee quand l utilisateur change le statut du contrat dans le formulaire.
+    // On garde la nouvelle valeur saisie dans la variable correspondante.
     handleContractStatusChange(event) {
         this.contractStatus = event.detail.value;
     }
 
+    // METHODE handleContractDescriptionChange : appelee quand l utilisateur change la description du contrat dans le formulaire.
+    // On garde la nouvelle valeur saisie dans la variable correspondante.
     handleContractDescriptionChange(event) {
         this.contractDescription = event.target.value;
     }
 
-    // ============================================================
-    // CONTRACTS - CREATE
-    // ============================================================
-
+    // METHODE handleContractCreate : appelee quand on clique sur le bouton pour creer un contrat.
+    // Role : envoyer les valeurs du formulaire a Apex, vider le formulaire, puis recharger la liste.
     async handleContractCreate() {
 
+        // On efface l ancien message d erreur avant de commencer.
         this.clearError();
 
         try {
@@ -1111,6 +1119,7 @@ export default class TripManager extends LightningElement {
                         10
                     );
 
+            // Appel a la methode Apex (cote serveur) : l enregistrement se fait dans Salesforce.
             await createContract({
                 accountId: this.contractAccountId,
                 startDate: this.contractStartDate,
@@ -1119,10 +1128,13 @@ export default class TripManager extends LightningElement {
                 description: this.contractDescription
             });
 
+            // On vide le formulaire.
             this.resetContractForm();
 
+            // On recharge la liste pour voir les changements a l ecran.
             await this.loadContracts();
 
+        // Si Apex renvoie une erreur, on l affiche a l ecran.
         } catch (error) {
 
             this.setError(error);
@@ -1130,10 +1142,8 @@ export default class TripManager extends LightningElement {
         }
     }
 
-    // ============================================================
-    // CONTRACTS - SELECT
-    // ============================================================
-
+    // METHODE handleSelectContract : appelee quand on clique sur Modifier pour un contrat de la liste.
+    // Role : retrouver le contrat grace a son Id, passer en mode modification et remplir le formulaire avec ses valeurs.
     handleSelectContract(event) {
 
         const contractId =
@@ -1148,6 +1158,7 @@ export default class TripManager extends LightningElement {
             return;
         }
 
+        // On passe en mode modification.
         this.isContractEditMode = true;
 
         this.editingContractId =
@@ -1174,12 +1185,11 @@ export default class TripManager extends LightningElement {
             contractRecord.Description || '';
     }
 
-    // ============================================================
-    // CONTRACTS - UPDATE
-    // ============================================================
-
+    // METHODE handleContractUpdate : appelee quand on enregistre la modification d un contrat.
+    // Role : envoyer les nouvelles valeurs a Apex, quitter le mode modification, puis recharger la liste.
     async handleContractUpdate() {
 
+        // On efface l ancien message d erreur avant de commencer.
         this.clearError();
 
         try {
@@ -1192,6 +1202,7 @@ export default class TripManager extends LightningElement {
                         10
                     );
 
+            // Appel a la methode Apex (cote serveur) : l enregistrement se fait dans Salesforce.
             await updateContract({
                 contractId: this.editingContractId,
                 accountId: this.contractAccountId,
@@ -1201,10 +1212,13 @@ export default class TripManager extends LightningElement {
                 description: this.contractDescription
             });
 
+            // On vide le formulaire.
             this.resetContractForm();
 
+            // On recharge la liste pour voir les changements a l ecran.
             await this.loadContracts();
 
+        // Si Apex renvoie une erreur, on l affiche a l ecran.
         } catch (error) {
 
             this.setError(error);
@@ -1212,12 +1226,11 @@ export default class TripManager extends LightningElement {
         }
     }
 
-    // ============================================================
-    // CONTRACTS - DELETE
-    // ============================================================
-
+    // METHODE handleContractDelete : appelee quand on clique sur Supprimer pour un contrat.
+    // Role : lire l Id de la ligne, demander a Apex de supprimer, puis recharger la liste.
     async handleContractDelete(event) {
 
+        // On efface l ancien message d erreur avant de commencer.
         this.clearError();
 
         const contractId =
@@ -1229,12 +1242,15 @@ export default class TripManager extends LightningElement {
 
         try {
 
+            // Appel a la methode Apex qui supprime l enregistrement dans Salesforce.
             await deleteContract({
                 contractId: contractId
             });
 
+            // On recharge la liste pour voir les changements a l ecran.
             await this.loadContracts();
 
+        // Si Apex renvoie une erreur, on l affiche a l ecran.
         } catch (error) {
 
             this.setError(error);
@@ -1242,18 +1258,20 @@ export default class TripManager extends LightningElement {
         }
     }
 
-    // ============================================================
-    // CONTRACTS - CANCEL
-    // ============================================================
-
+    // METHODE handleCancelContractEdit : appelee quand on clique sur Annuler pendant une modification.
+    // Role : quitter le mode modification et vider le formulaire.
     handleCancelContractEdit() {
+        // On vide le formulaire.
         this.resetContractForm();
     }
 
+    // METHODE resetContractForm : remet le formulaire du contrat a zero (mode creation, champs vides).
     resetContractForm() {
 
+        // On quitte le mode modification.
         this.isContractEditMode = false;
 
+        // On oublie l Id de l enregistrement qui etait modifie.
         this.editingContractId = null;
 
         this.contractAccountId = null;

@@ -1,5 +1,11 @@
+// Classe qui gere les voyages (Trip__c) : creer, lire, modifier, supprimer (CRUD).
+// "with sharing" veut dire qu on respecte les droits de l utilisateur connecte.
+// Le composant LWC tripManager appelle ces methodes.
 public with sharing class TripCrudController {
 
+    // METHODE createTrip : cree un nouveau voyage.
+    // Role : verifier les donnees recues, puis enregistrer le voyage dans Salesforce.
+    // @AuraEnabled permet au composant LWC d appeler cette methode.
     @AuraEnabled
     public static Trip__c createTrip(
         String destination,
@@ -9,6 +15,7 @@ public with sharing class TripCrudController {
         Decimal totalBudget,
         Decimal totalCost
     ) {
+        // On verifie que la destination n est pas vide, sinon on renvoie une erreur lisible.
         if (String.isBlank(destination)) {
             throw new AuraHandledException(
                 'La destination est obligatoire.'
@@ -27,6 +34,7 @@ public with sharing class TripCrudController {
             );
         }
 
+        // La date de debut ne doit pas etre apres la date de fin.
         if (startDate > endDate) {
             throw new AuraHandledException(
                 'La date de fin doit être postérieure ou égale à la date de début.'
@@ -39,6 +47,7 @@ public with sharing class TripCrudController {
             );
         }
 
+        // On prepare le voyage en memoire (il n est pas encore enregistre). Le statut de depart est A venir.
         Trip__c trip = new Trip__c(
             Status__c = 'A venir',
             Destination__c = destination,
@@ -50,7 +59,9 @@ public with sharing class TripCrudController {
         );
 
         try {
+            // insert = on enregistre le voyage dans la base. Si une regle de validation refuse, on passe dans le catch.
             insert trip;
+        // Si l enregistrement echoue, on renvoie le premier message d erreur a l ecran.
         } catch (DmlException e) {
             throw new AuraHandledException(
                 e.getDmlMessage(0)
@@ -60,8 +71,12 @@ public with sharing class TripCrudController {
         return trip;
     }
 
-    @AuraEnabled(cacheable=true)
+    // METHODE getTrips : lit tous les voyages.
+    // Role : renvoyer la liste des voyages, tries par date de debut (du plus proche au plus lointain).
+    // Pas de cacheable=true ici : sinon Salesforce renvoie d anciennes donnees gardees en cache et le bouton Actualiser ne marche pas.
+    @AuraEnabled
     public static List<Trip__c> getTrips() {
+        // Requete SOQL : on choisit les champs dont l ecran a besoin dans la table Trip__c.
         return [
             SELECT Id,
                    Name,
@@ -79,9 +94,12 @@ public with sharing class TripCrudController {
         ];
     }
 
+    // METHODE updateTrip : modifie un voyage qui existe deja.
+    // Role : verifier que le voyage et ses champs obligatoires sont valides, puis mettre a jour.
     @AuraEnabled
     public static void updateTrip(Trip__c trip) {
 
+        // Sans Id on ne sait pas quel voyage modifier, donc on refuse.
         if (trip == null || trip.Id == null) {
             throw new AuraHandledException(
                 'Le voyage à modifier est invalide.'
@@ -119,6 +137,7 @@ public with sharing class TripCrudController {
         }
 
         try {
+            // update = on enregistre les modifications dans la base.
             update trip;
         } catch (DmlException e) {
             throw new AuraHandledException(
@@ -127,6 +146,8 @@ public with sharing class TripCrudController {
         }
     }
 
+    // METHODE deleteTrip : supprime un voyage grace a son Id.
+    // Role : retrouver le voyage puis le supprimer de la base.
     @AuraEnabled
     public static void deleteTrip(Id tripId) {
 
@@ -136,6 +157,7 @@ public with sharing class TripCrudController {
             );
         }
 
+        // On cherche le voyage avec son Id (LIMIT 1 = un seul resultat).
         Trip__c trip = [
             SELECT Id
             FROM Trip__c
@@ -143,6 +165,7 @@ public with sharing class TripCrudController {
             LIMIT 1
         ];
 
+        // delete = on supprime le voyage de la base.
         delete trip;
     }
 }

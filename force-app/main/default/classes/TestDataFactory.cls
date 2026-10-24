@@ -1,33 +1,31 @@
+// Classe utilitaire pour les tests : elle fabrique des comptes, opportunites et voyages de test.
+// Les methodes renvoient des objets en memoire (pas encore enregistres) : le test fait l insert lui-meme.
+// @IsTest = cette classe sert seulement aux tests, elle ne compte pas dans la limite de code.
 @IsTest
 public class TestDataFactory {
 
-// ============================================================
-// ACCOUNT
-// ============================================================
-
+// METHODE : Cree un compte de test avec le nom Test Account.
 public static Account createAccount() {
     return new Account(
         Name = 'Test Account'
     );
 }
 
+// METHODE : Cree un compte de test avec le nom donne en parametre.
 public static Account createAccount(String name) {
     return new Account(
         Name = name
     );
 }
 
+// METHODE : Cree un compte de test (meme resultat que createAccount, version avec un autre nom).
 public static Account createTestAccount() {
     return new Account(
         Name = 'Test Account'
     );
 }
 
-
-// ============================================================
-// OPPORTUNITY
-// ============================================================
-
+// METHODE : Cree une opportunite de test liee au compte donne : destination Paris, 20 participants, montant 5000, etape Prospecting.
 public static Opportunity createOpportunity(Id accountId) {
     return new Opportunity(
         Name = 'Test Opportunity',
@@ -42,6 +40,7 @@ public static Opportunity createOpportunity(Id accountId) {
     );
 }
 
+// METHODE : Cree une opportunite de test (meme resultat que createOpportunity(Id), autre nom).
 public static Opportunity createTestOpportunity(Id accountId) {
     return new Opportunity(
         Name = 'Test Opportunity',
@@ -56,6 +55,7 @@ public static Opportunity createTestOpportunity(Id accountId) {
     );
 }
 
+// METHODE : Cree une opportunite de test avec tous les parametres au choix (nom, etape, destination, jours avant le debut et la fin, participants, montant).
 public static Opportunity createOpportunity(
     Id accountId,
     String name,
@@ -79,11 +79,7 @@ public static Opportunity createOpportunity(
     );
 }
 
-
-// ============================================================
-// TRIP
-// ============================================================
-
+// METHODE : Cree un voyage de test avec la destination, le nombre de participants et les jours de debut et de fin donnes.
 public static Trip__c createTrip(
     String destination,
     Integer participants,
@@ -101,6 +97,7 @@ public static Trip__c createTrip(
     );
 }
 
+// METHODE : Cree un voyage avec des dates correctes (debut dans 10 jours, fin dans 15 jours).
 public static Trip__c createValidDateTrip() {
     return new Trip__c(
         Status__c = 'A venir',
@@ -113,6 +110,7 @@ public static Trip__c createValidDateTrip() {
     );
 }
 
+// METHODE : Cree un voyage avec des dates incorrecte (la date de fin est AVANT la date de debut).
 public static Trip__c createInvalidDateTrip() {
     return new Trip__c(
         Status__c = 'A venir',
@@ -125,6 +123,7 @@ public static Trip__c createInvalidDateTrip() {
     );
 }
 
+// METHODE : Cree un voyage qui part dans 7 jours avec 5 participant (il doit etre annule par le batch).
 public static Trip__c createTripWithLessThan10Participants() {
     return new Trip__c(
         Status__c = 'A venir',
@@ -137,6 +136,7 @@ public static Trip__c createTripWithLessThan10Participants() {
     );
 }
 
+// METHODE : Cree un voyage qui part dans 7 jours avec 10 participant (il ne doit pas etre annule).
 public static Trip__c createTripWith10Participants() {
     return new Trip__c(
         Status__c = 'A venir',
@@ -149,6 +149,7 @@ public static Trip__c createTripWith10Participants() {
     );
 }
 
+// METHODE : Cree un voyage qui commence dans 5 jours (statut attendu : A venir).
 public static Trip__c createUpcomingTrip() {
     return new Trip__c(
         Status__c = 'A venir',
@@ -161,6 +162,7 @@ public static Trip__c createUpcomingTrip() {
     );
 }
 
+// METHODE : Cree un voyage qui commence aujourd hui et finit dans 5 jours (statut attendu : En cours).
 public static Trip__c createCurrentTrip() {
     return new Trip__c(
         Status__c = 'A venir',
@@ -173,6 +175,7 @@ public static Trip__c createCurrentTrip() {
     );
 }
 
+// METHODE : Cree un voyage deja fini (il y a 10 a 5 jours) (statut attendu : Termine).
 public static Trip__c createFinishedTrip() {
     return new Trip__c(
         Status__c = 'En cours',
@@ -185,6 +188,7 @@ public static Trip__c createFinishedTrip() {
     );
 }
 
+// METHODE : Cree un voyage standard pour les tests CRUD, avec la destination donne.
 public static Trip__c createCrudTrip(String destination) {
     return new Trip__c(
         Status__c = 'A venir',

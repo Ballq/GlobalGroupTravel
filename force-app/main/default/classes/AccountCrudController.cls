@@ -1,5 +1,9 @@
+// Classe qui gere les comptes clients (Account) : creer, lire, modifier, supprimer (CRUD).
+// Appelee par le composant LWC tripManager.
 public with sharing class AccountCrudController {
 
+    // METHODE createAccount : cree un nouveau compte client.
+    // Role : verifier que le nom est rempli, puis enregistrer le compte.
     @AuraEnabled
     public static Account createAccount(
         String name,
@@ -7,12 +11,14 @@ public with sharing class AccountCrudController {
         String website,
         String industry
     ) {
+        // Le nom est obligatoire : s il est vide on renvoie une erreur.
         if (String.isBlank(name)) {
             throw new AuraHandledException(
                 'Impossible de créer le compte : le nom du compte est obligatoire.'
             );
         }
 
+        // On prepare le compte en memoire avec les valeurs recues.
         Account account = new Account(
             Name = name,
             Phone = phone,
@@ -21,6 +27,7 @@ public with sharing class AccountCrudController {
         );
 
         try {
+            // insert = on enregistre le compte dans la base.
             insert account;
         } catch (DmlException e) {
             throw new AuraHandledException(
@@ -31,8 +38,9 @@ public with sharing class AccountCrudController {
         return account;
     }
 
-
-    @AuraEnabled(cacheable=true)
+    // METHODE getAccounts : lit tous les comptes tries par nom (de A a Z).
+    // Pas de cacheable=true ici : sinon Salesforce renvoie d anciennes donnees gardees en cache et le bouton Actualiser ne marche pas.
+    @AuraEnabled
     public static List<Account> getAccounts() {
         try {
             return [
@@ -51,7 +59,8 @@ public with sharing class AccountCrudController {
         }
     }
 
-
+    // METHODE updateAccount : modifie un compte qui existe deja.
+    // Role : verifier le compte (Id et nom), puis mettre a jour.
     @AuraEnabled
     public static void updateAccount(Account account) {
 
@@ -68,6 +77,7 @@ public with sharing class AccountCrudController {
         }
 
         try {
+            // update = on enregistre les modifications.
             update account;
         } catch (DmlException e) {
             throw new AuraHandledException(
@@ -76,7 +86,8 @@ public with sharing class AccountCrudController {
         }
     }
 
-
+    // METHODE deleteAccount : supprime un compte grace a son Id.
+    // Role : verifier que le compte existe, puis le supprimer.
     @AuraEnabled
     public static void deleteAccount(Id accountId) {
 
@@ -86,6 +97,7 @@ public with sharing class AccountCrudController {
             );
         }
 
+        // On declare la variable avant le try pour pouvoir l utiliser apres.
         Account account;
 
         try {
@@ -95,6 +107,7 @@ public with sharing class AccountCrudController {
                 WHERE Id = :accountId
                 LIMIT 1
             ];
+        // Si la requete ne trouve rien, c est que le compte n existe pas : on le dit a l utilisateur.
         } catch (QueryException e) {
             throw new AuraHandledException(
                 'Impossible de supprimer le compte : le compte demandé n’existe pas.'
@@ -102,6 +115,7 @@ public with sharing class AccountCrudController {
         }
 
         try {
+            // delete = on supprime le compte. Ca peut echouer s il est lie a d autres donnees.
             delete account;
         } catch (DmlException e) {
             throw new AuraHandledException(

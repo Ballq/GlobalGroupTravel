@@ -1,6 +1,9 @@
+// Test du batch TripStatusBatch : mise a jour du statut selon les dates.
 @IsTest
 private class TripStatusBatchTest {
 
+// TEST : trois voyages (a venir, en cours, termine).
+// Apres le batch, chaque voyage doit avoir le bon statut : A venir, En cours, Termine.
 @IsTest
 static void testTripStatusBatch() {
 
@@ -14,6 +17,7 @@ static void testTripStatusBatch() {
         finishedTrip
     };
 
+    // startTest : ici commence la partie du test qui execute le code a tester.
     Test.startTest();
 
     Database.executeBatch(new TripStatusBatch());
@@ -30,6 +34,7 @@ static void testTripStatusBatch() {
         }
     ]);
 
+    // assert : le test echoue si le resultat obtenu n est pas celui attendu.
     System.assertEquals(
         'A venir',
         trips.get(upcomingTrip.Id).Status__c

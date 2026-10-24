@@ -1,16 +1,16 @@
+// Tests du controleur ContractCrudController : creer, lire, modifier, supprimer un contrat, cas normaux et cas d erreur.
 @IsTest
 private class ContractCrudControllerTest {
 
-    // ============================================================
-    // CREATE
-    // ============================================================
-
+    // TEST : creation d un contrat valide.
+    // On verifie qu il est bien enregistre avec les bonnes valeurs.
     @IsTest
     static void testCreateContract() {
 
         Account account = TestDataFactory.createTestAccount();
         insert account;
 
+        // startTest : ici commence la partie du test qui execute le code a tester.
         Test.startTest();
 
         Contract contractRecord =
@@ -24,6 +24,7 @@ private class ContractCrudControllerTest {
 
         Test.stopTest();
 
+        // assert : le test echoue si le resultat obtenu n est pas celui attendu.
         System.assertNotEquals(
             null,
             contractRecord.Id,
@@ -56,14 +57,17 @@ private class ContractCrudControllerTest {
         );
     }
 
-
+    // TEST : creation sans compte (valeur vide).
+    // Le champ est obligatoire : on s attend a une erreur (AuraHandledException).
     @IsTest
     static void testCreateContractWithNullAccount() {
 
         Boolean exceptionThrown = false;
 
+        // startTest : ici commence la partie du test qui execute le code a tester.
         Test.startTest();
 
+        // try/catch : on attrape l erreur attendue pour verifier qu elle est bien levee.
         try {
             ContractCrudController.createContract(
                 null,
@@ -78,6 +82,7 @@ private class ContractCrudControllerTest {
 
         Test.stopTest();
 
+        // assert : le test echoue si le resultat obtenu n est pas celui attendu.
         System.assertEquals(
             true,
             exceptionThrown,
@@ -85,7 +90,8 @@ private class ContractCrudControllerTest {
         );
     }
 
-
+    // TEST : creation sans date de debut (valeur vide).
+    // Le champ est obligatoire : on s attend a une erreur (AuraHandledException).
     @IsTest
     static void testCreateContractWithNullStartDate() {
 
@@ -94,8 +100,10 @@ private class ContractCrudControllerTest {
 
         Boolean exceptionThrown = false;
 
+        // startTest : ici commence la partie du test qui execute le code a tester.
         Test.startTest();
 
+        // try/catch : on attrape l erreur attendue pour verifier qu elle est bien levee.
         try {
             ContractCrudController.createContract(
                 account.Id,
@@ -110,6 +118,7 @@ private class ContractCrudControllerTest {
 
         Test.stopTest();
 
+        // assert : le test echoue si le resultat obtenu n est pas celui attendu.
         System.assertEquals(
             true,
             exceptionThrown,
@@ -117,7 +126,8 @@ private class ContractCrudControllerTest {
         );
     }
 
-
+    // TEST : creation avec duree du contrat invalide(s).
+    // On s attend a une erreur (AuraHandledException).
     @IsTest
     static void testCreateContractWithInvalidContractTerm() {
 
@@ -126,8 +136,10 @@ private class ContractCrudControllerTest {
 
         Boolean exceptionThrown = false;
 
+        // startTest : ici commence la partie du test qui execute le code a tester.
         Test.startTest();
 
+        // try/catch : on attrape l erreur attendue pour verifier qu elle est bien levee.
         try {
             ContractCrudController.createContract(
                 account.Id,
@@ -142,6 +154,7 @@ private class ContractCrudControllerTest {
 
         Test.stopTest();
 
+        // assert : le test echoue si le resultat obtenu n est pas celui attendu.
         System.assertEquals(
             true,
             exceptionThrown,
@@ -149,7 +162,8 @@ private class ContractCrudControllerTest {
         );
     }
 
-
+    // TEST : creation sans duree du contrat (valeur vide).
+    // Le champ est obligatoire : on s attend a une erreur (AuraHandledException).
     @IsTest
     static void testCreateContractWithNullContractTerm() {
 
@@ -158,8 +172,10 @@ private class ContractCrudControllerTest {
 
         Boolean exceptionThrown = false;
 
+        // startTest : ici commence la partie du test qui execute le code a tester.
         Test.startTest();
 
+        // try/catch : on attrape l erreur attendue pour verifier qu elle est bien levee.
         try {
             ContractCrudController.createContract(
                 account.Id,
@@ -174,6 +190,7 @@ private class ContractCrudControllerTest {
 
         Test.stopTest();
 
+        // assert : le test echoue si le resultat obtenu n est pas celui attendu.
         System.assertEquals(
             true,
             exceptionThrown,
@@ -181,7 +198,8 @@ private class ContractCrudControllerTest {
         );
     }
 
-
+    // TEST : creation sans statut (valeur vide).
+    // Le champ est obligatoire : on s attend a une erreur (AuraHandledException).
     @IsTest
     static void testCreateContractWithEmptyStatus() {
 
@@ -190,8 +208,10 @@ private class ContractCrudControllerTest {
 
         Boolean exceptionThrown = false;
 
+        // startTest : ici commence la partie du test qui execute le code a tester.
         Test.startTest();
 
+        // try/catch : on attrape l erreur attendue pour verifier qu elle est bien levee.
         try {
             ContractCrudController.createContract(
                 account.Id,
@@ -206,6 +226,7 @@ private class ContractCrudControllerTest {
 
         Test.stopTest();
 
+        // assert : le test echoue si le resultat obtenu n est pas celui attendu.
         System.assertEquals(
             true,
             exceptionThrown,
@@ -213,11 +234,8 @@ private class ContractCrudControllerTest {
         );
     }
 
-
-    // ============================================================
-    // READ
-    // ============================================================
-
+    // TEST : lecture de la liste des contrats.
+    // On cree des donnees puis on verifie le contenu de la liste renvoyee.
     @IsTest
     static void testGetContracts() {
 
@@ -233,6 +251,7 @@ private class ContractCrudControllerTest {
                 'Test contract'
             );
 
+        // startTest : ici commence la partie du test qui execute le code a tester.
         Test.startTest();
 
         List<Contract> contracts =
@@ -250,6 +269,7 @@ private class ContractCrudControllerTest {
             }
         }
 
+        // assert : le test echoue si le resultat obtenu n est pas celui attendu.
         System.assertEquals(
             true,
             found,
@@ -257,11 +277,8 @@ private class ContractCrudControllerTest {
         );
     }
 
-
-    // ============================================================
-    // UPDATE
-    // ============================================================
-
+    // TEST : modification d un contrat existant.
+    // On verifie que les nouvelles valeurs sont bien enregistrees.
     @IsTest
     static void testUpdateContract() {
 
@@ -277,6 +294,7 @@ private class ContractCrudControllerTest {
                 'Initial description'
             );
 
+        // startTest : ici commence la partie du test qui execute le code a tester.
         Test.startTest();
 
         ContractCrudController.updateContract(
@@ -301,6 +319,7 @@ private class ContractCrudControllerTest {
             WHERE Id = :contractRecord.Id
         ];
 
+        // assert : le test echoue si le resultat obtenu n est pas celui attendu.
         System.assertEquals(
             account.Id,
             updatedContract.AccountId
@@ -327,7 +346,8 @@ private class ContractCrudControllerTest {
         );
     }
 
-
+    // TEST : modification sans identifiant (null).
+    // On s attend a une erreur (AuraHandledException).
     @IsTest
     static void testUpdateContractWithNullId() {
 
@@ -336,8 +356,10 @@ private class ContractCrudControllerTest {
 
         Boolean exceptionThrown = false;
 
+        // startTest : ici commence la partie du test qui execute le code a tester.
         Test.startTest();
 
+        // try/catch : on attrape l erreur attendue pour verifier qu elle est bien levee.
         try {
             ContractCrudController.updateContract(
                 null,
@@ -353,6 +375,7 @@ private class ContractCrudControllerTest {
 
         Test.stopTest();
 
+        // assert : le test echoue si le resultat obtenu n est pas celui attendu.
         System.assertEquals(
             true,
             exceptionThrown,
@@ -360,7 +383,8 @@ private class ContractCrudControllerTest {
         );
     }
 
-
+    // TEST : modification sans compte (valeur vide).
+    // Le champ est obligatoire : on s attend a une erreur (AuraHandledException).
     @IsTest
     static void testUpdateContractWithNullAccount() {
 
@@ -378,8 +402,10 @@ private class ContractCrudControllerTest {
 
         Boolean exceptionThrown = false;
 
+        // startTest : ici commence la partie du test qui execute le code a tester.
         Test.startTest();
 
+        // try/catch : on attrape l erreur attendue pour verifier qu elle est bien levee.
         try {
             ContractCrudController.updateContract(
                 contractRecord.Id,
@@ -395,6 +421,7 @@ private class ContractCrudControllerTest {
 
         Test.stopTest();
 
+        // assert : le test echoue si le resultat obtenu n est pas celui attendu.
         System.assertEquals(
             true,
             exceptionThrown,
@@ -402,7 +429,8 @@ private class ContractCrudControllerTest {
         );
     }
 
-
+    // TEST : modification sans date de debut (valeur vide).
+    // Le champ est obligatoire : on s attend a une erreur (AuraHandledException).
     @IsTest
     static void testUpdateContractWithNullStartDate() {
 
@@ -420,8 +448,10 @@ private class ContractCrudControllerTest {
 
         Boolean exceptionThrown = false;
 
+        // startTest : ici commence la partie du test qui execute le code a tester.
         Test.startTest();
 
+        // try/catch : on attrape l erreur attendue pour verifier qu elle est bien levee.
         try {
             ContractCrudController.updateContract(
                 contractRecord.Id,
@@ -437,6 +467,7 @@ private class ContractCrudControllerTest {
 
         Test.stopTest();
 
+        // assert : le test echoue si le resultat obtenu n est pas celui attendu.
         System.assertEquals(
             true,
             exceptionThrown,
@@ -444,7 +475,8 @@ private class ContractCrudControllerTest {
         );
     }
 
-
+    // TEST : modification avec duree du contrat invalide(s).
+    // On s attend a une erreur (AuraHandledException).
     @IsTest
     static void testUpdateContractWithInvalidContractTerm() {
 
@@ -462,8 +494,10 @@ private class ContractCrudControllerTest {
 
         Boolean exceptionThrown = false;
 
+        // startTest : ici commence la partie du test qui execute le code a tester.
         Test.startTest();
 
+        // try/catch : on attrape l erreur attendue pour verifier qu elle est bien levee.
         try {
             ContractCrudController.updateContract(
                 contractRecord.Id,
@@ -479,6 +513,7 @@ private class ContractCrudControllerTest {
 
         Test.stopTest();
 
+        // assert : le test echoue si le resultat obtenu n est pas celui attendu.
         System.assertEquals(
             true,
             exceptionThrown,
@@ -486,7 +521,8 @@ private class ContractCrudControllerTest {
         );
     }
 
-
+    // TEST : modification sans duree du contrat (valeur vide).
+    // Le champ est obligatoire : on s attend a une erreur (AuraHandledException).
     @IsTest
     static void testUpdateContractWithNullContractTerm() {
 
@@ -504,8 +540,10 @@ private class ContractCrudControllerTest {
 
         Boolean exceptionThrown = false;
 
+        // startTest : ici commence la partie du test qui execute le code a tester.
         Test.startTest();
 
+        // try/catch : on attrape l erreur attendue pour verifier qu elle est bien levee.
         try {
             ContractCrudController.updateContract(
                 contractRecord.Id,
@@ -521,6 +559,7 @@ private class ContractCrudControllerTest {
 
         Test.stopTest();
 
+        // assert : le test echoue si le resultat obtenu n est pas celui attendu.
         System.assertEquals(
             true,
             exceptionThrown,
@@ -528,7 +567,8 @@ private class ContractCrudControllerTest {
         );
     }
 
-
+    // TEST : modification sans statut (valeur vide).
+    // Le champ est obligatoire : on s attend a une erreur (AuraHandledException).
     @IsTest
     static void testUpdateContractWithEmptyStatus() {
 
@@ -546,8 +586,10 @@ private class ContractCrudControllerTest {
 
         Boolean exceptionThrown = false;
 
+        // startTest : ici commence la partie du test qui execute le code a tester.
         Test.startTest();
 
+        // try/catch : on attrape l erreur attendue pour verifier qu elle est bien levee.
         try {
             ContractCrudController.updateContract(
                 contractRecord.Id,
@@ -563,6 +605,7 @@ private class ContractCrudControllerTest {
 
         Test.stopTest();
 
+        // assert : le test echoue si le resultat obtenu n est pas celui attendu.
         System.assertEquals(
             true,
             exceptionThrown,
@@ -570,11 +613,8 @@ private class ContractCrudControllerTest {
         );
     }
 
-
-    // ============================================================
-    // DELETE
-    // ============================================================
-
+    // TEST : suppression d un contrat existant.
+    // On verifie qu il n existe plus apres.
     @IsTest
     static void testDeleteContract() {
 
@@ -590,6 +630,7 @@ private class ContractCrudControllerTest {
                 'Test contract'
             );
 
+        // startTest : ici commence la partie du test qui execute le code a tester.
         Test.startTest();
 
         ContractCrudController.deleteContract(
@@ -604,6 +645,7 @@ private class ContractCrudControllerTest {
             WHERE Id = :contractRecord.Id
         ];
 
+        // assert : le test echoue si le resultat obtenu n est pas celui attendu.
         System.assertEquals(
             0,
             contractCount,
@@ -611,14 +653,17 @@ private class ContractCrudControllerTest {
         );
     }
 
-
+    // TEST : suppression sans identifiant (null).
+    // On s attend a une erreur (AuraHandledException).
     @IsTest
     static void testDeleteContractWithNullId() {
 
         Boolean exceptionThrown = false;
 
+        // startTest : ici commence la partie du test qui execute le code a tester.
         Test.startTest();
 
+        // try/catch : on attrape l erreur attendue pour verifier qu elle est bien levee.
         try {
             ContractCrudController.deleteContract(null);
         } catch (AuraHandledException e) {
@@ -627,10 +672,101 @@ private class ContractCrudControllerTest {
 
         Test.stopTest();
 
+        // assert : le test echoue si le resultat obtenu n est pas celui attendu.
         System.assertEquals(
             true,
             exceptionThrown,
             'Une erreur doit être levée si l’identifiant est null.'
+        );
+    }
+        // TEST : suppression d un contrat qui n existe plus (identifiant deja supprime).
+    // On s attend a une erreur claire (AuraHandledException).
+    @IsTest
+    static void testDeleteContractWithUnknownId() {
+
+        Account account = TestDataFactory.createTestAccount();
+        insert account;
+
+        Contract contractRecord =
+            ContractCrudController.createContract(
+                account.Id,
+                Date.today(),
+                12,
+                'Draft',
+                'Test contract'
+            );
+
+        // On supprime le contrat pour que son Id n existe plus.
+        delete contractRecord;
+
+        Boolean exceptionThrown = false;
+
+        // startTest : ici commence la partie du test qui execute le code a tester.
+        Test.startTest();
+
+        // try/catch : on attrape l erreur attendue pour verifier qu elle est bien levee.
+        try {
+            ContractCrudController.deleteContract(contractRecord.Id);
+        } catch (AuraHandledException e) {
+            exceptionThrown = true;
+        }
+
+        Test.stopTest();
+
+        // assert : le test echoue si le resultat obtenu n est pas celui attendu.
+        System.assertEquals(
+            true,
+            exceptionThrown,
+            'Une erreur doit etre levee si le contrat n existe pas.'
+        );
+    }
+
+    // TEST : modification d un contrat qui a ete supprime.
+    // Salesforce refuse l update : on verifie que l erreur est renvoyee sous forme d AuraHandledException.
+    @IsTest
+    static void testUpdateDeletedContractThrowsHandledException() {
+
+        Account account = TestDataFactory.createTestAccount();
+        insert account;
+
+        Contract contractRecord =
+            ContractCrudController.createContract(
+                account.Id,
+                Date.today(),
+                12,
+                'Draft',
+                'Test contract'
+            );
+
+        // On supprime le contrat pour que la modification echoue.
+        delete contractRecord;
+
+        Boolean exceptionThrown = false;
+
+        // startTest : ici commence la partie du test qui execute le code a tester.
+        Test.startTest();
+
+        // try/catch : on attrape l erreur attendue pour verifier qu elle est bien levee.
+        try {
+            ContractCrudController.updateContract(
+                contractRecord.Id,
+                account.Id,
+                Date.today(),
+                6,
+                'Draft',
+                'Modification'
+            );
+        } catch (AuraHandledException e) {
+            exceptionThrown = true;
+        }
+
+        Test.stopTest();
+
+        // assert : le test echoue si le resultat obtenu n est pas celui attendu.
+        System.assertEquals(
+            true,
+            exceptionThrown,
+            'Une erreur lisible doit etre renvoyee.'
         );
     }
 }
